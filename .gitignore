@@ -1,0 +1,5 @@
+build/
+filesystem/
+upload.sh
+*.json
+*.z64

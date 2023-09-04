@@ -1,0 +1,6 @@
+#ifndef GAME_ENTITIY_A60_H
+#define GAME_ENTITIY_A60_H
+
+
+
+#endif /* GAME_ENTITIY_A60_H */
