@@ -1,6 +1,7 @@
 #!/bin/sh
 
 clear
+mkdir -p filesystem
 
 for i in door door_numplate door_nums locker locker_inside \
 	room0 room1 room2 room3 room4 room5
