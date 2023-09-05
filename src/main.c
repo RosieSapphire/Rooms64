@@ -35,12 +35,14 @@ static void _n64_init(void)
 	audio_init(32000, 4);
 	mixer_init(SFXC_COUNT);
 	sfx_load();
+
 	/*
 	debug_load();
-	*/
 	debug_init_isviewer();
 	debug_init_usblog();
-	// rdpq_debug_start();
+	rdpq_debug_start();
+	*/
+
 	srand(TICKS_READ());
 }
 
@@ -71,8 +73,6 @@ int main(void)
 	debug_add("Player Is Grounded", &cam_debug_is_grounded, DV_BOOL);
 	debug_add("Room Current", &current_room, DV_INT);
 
-	bool show_debug = false;
-
 	surface_t dep = surface_alloc(FMT_RGBA16, 320, 240);
 
 	entities_init();
@@ -102,7 +102,6 @@ int main(void)
 			controller_scan();
 			struct controller_data held = get_keys_held();
 			struct controller_data down = get_keys_down();
-			show_debug ^= down.c->start;
 
 			static bool trigd = false;
 			bool room_changed = current_room != last_room;
@@ -218,9 +217,6 @@ int main(void)
 
 		gl_context_end();
 
-		if(show_debug)
-			debug_draw();
-
 		rdpq_detach_show();
 		/*
 		long t2 = get_ticks();
@@ -228,11 +224,12 @@ int main(void)
 				/ (float)TICKS_PER_SECOND);
 				*/
 
-		if(audio_can_write()) {
-			short *audio_buf = audio_write_begin();
-			mixer_poll(audio_buf, audio_get_buffer_length());
-			audio_write_end();
-		}
+		if(!audio_can_write())
+			continue;
+
+		short *audio_buf = audio_write_begin();
+		mixer_poll(audio_buf, audio_get_buffer_length());
+		audio_write_end();
 		
 	}
 
