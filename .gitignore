@@ -1,0 +1,7 @@
+# dirs
+build/
+filesystem/
+
+# files
+*.z64
+*.json
