@@ -1,6 +1,7 @@
 #include <libdragon.h>
 #include <t3d/t3d.h>
 #include <t3d/t3dmodel.h>
+#include <string.h>
 
 #include "util.h"
 #include "inputs.h"
@@ -26,6 +27,7 @@ int main(void)
         T3DVec3 light_direction;
         uint8_t light_col_direction[4], light_col_ambi[4];
 
+        uint16_t room_ind;
         struct room room_cur;
         struct player player;
 
@@ -53,9 +55,8 @@ int main(void)
         viewport = t3d_viewport_create();
 
         /* Initialize game. */
-        room_cur = room_init_from_path("rom:/room.t3dm");
-
-        /* test_objects_create(test_objects); */
+        room_ind = 0;
+        room_cur = room_init_from_index(room_ind);
 
         {
                 T3DVec3 pos;
@@ -82,7 +83,7 @@ int main(void)
         time_accumulated = 0.f;
 
         for (;;) {
-                static struct inputs inp_old;
+                static struct inputs inp_old, inp_new;
 
                 const float fixed_time = 1.f / TICKRATE;
                 float subtick;
@@ -91,15 +92,22 @@ int main(void)
                 for (time_accumulated += display_get_delta_time();
                      time_accumulated >= fixed_time;
                      time_accumulated -= fixed_time) {
-                        struct inputs inp_new, __attribute__((unused))inp_diff;
+                        uint16_t room_ind_prev;
 
                         inp_old = inp_new;
                         inp_new = inputs_get_from_libdragon();
-                        inp_diff = inputs_get_diff(&inp_old, &inp_new);
 
                         player_update(&player, &inp_new, fixed_time);
-                        room_update(&room_cur, fixed_time);
-                        /* test_objects_run_updates(test_objects, fixed_time); */
+                        room_ind_prev = room_ind;
+                        room_ind = room_update(&room_cur, &inp_old,
+                                               &inp_new, fixed_time);
+
+                        if (room_ind_prev ^ room_ind) {
+                                debugf("ROOM INDEX CHANGED!\n");
+                                room_terminate(&room_cur);
+                                room_cur = room_init_from_index(room_ind);
+                                rspq_wait();
+                        }
                 }
 
                 /* Updating -> Rendering */
@@ -135,7 +143,6 @@ int main(void)
                 t3d_light_set_count(1);
 
                 room_render(&room_cur);
-                /* test_objects_render(test_objects); */
 
                 rdpq_detach_show();
         }

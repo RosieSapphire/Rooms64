@@ -2,11 +2,22 @@
 
 #include "t3d_ext.h"
 
-struct room room_init_from_path(const char *path)
+enum {
+        ROOM_00,
+        ROOM_01,
+        ROOM_CNT
+};
+
+static const char *room_paths[ROOM_CNT] = {
+        "rom:/room00.t3dm",
+        "rom:/room01.t3dm"
+};
+
+struct room room_init_from_index(const uint16_t ind)
 {
         struct room r;
 
-        r.mdl = t3d_model_load(path);
+        r.mdl = t3d_model_load(room_paths[ind]);
         r.mtx = malloc_uncached(sizeof(*r.mtx));
 
         rspq_block_begin();
@@ -24,8 +35,18 @@ struct room room_init_from_path(const char *path)
         return r;
 }
 
-void room_update(struct room *r, const float ft)
+uint16_t room_update(struct room *r, const struct inputs *inp_old,
+                     const struct inputs *inp_new, const float ft)
 {
+        static uint16_t bad = 0;
+
+        if (inp_new->btn[BTN_A] &&
+            (inp_new->btn[BTN_A] ^ inp_old->btn[BTN_A])) {
+                debugf("PRESSED A!\n");
+                bad ^= 1;
+        }
+
+        return bad;
 }
 
 void room_setup_matrices(struct room *r, const float st)
