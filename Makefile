@@ -6,9 +6,9 @@ BUILD_DIR := build
 include $(N64_INST)/include/n64.mk
 include $(T3D_INST)/t3d.mk
 
-INC_DIRS := include include/engine
+INC_DIRS := include include/engine include/game
 INC_FLAGS := $(INC_DIRS:%=-I%)
-SRC_DIRS := src src/engine
+SRC_DIRS := src src/engine src/game
 H_FILES := $(foreach dir,$(INC_DIRS),$(wildcard $(dir)/*.h))
 C_FILES := $(foreach dir,$(SRC_DIRS),$(wildcard $(dir)/*.c))
 O_FILES := $(C_FILES:%.c=$(BUILD_DIR)/%.o)

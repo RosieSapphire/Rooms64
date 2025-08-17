@@ -8,14 +8,14 @@ struct object object_create(const char *mdl_path, const T3DVec3 *pos,
 {
         struct object object;
 
-        object.model = t3d_model_load(mdl_path);
-        object.matrix = malloc_uncached(sizeof(*object.matrix));
+        object.mdl = t3d_model_load(mdl_path);
+        object.mtx = malloc_uncached(sizeof(*object.mtx));
 
         rspq_block_begin();
-        t3d_matrix_push(object.matrix);
-        t3d_model_draw(object.model);
+        t3d_matrix_push(object.mtx);
+        t3d_model_draw(object.mdl);
         t3d_matrix_pop(1);
-        object.displaylist = rspq_block_end();
+        object.dl = rspq_block_end();
 
         object.position_a = *pos;
         object.position_b = object.position_a;
@@ -28,22 +28,22 @@ struct object object_create(const char *mdl_path, const T3DVec3 *pos,
         return object;
 }
 
-void object_setup_matrix(struct object *obj, const float subtick)
+void object_setup_matrix(struct object *obj, const float st)
 {
         T3DVec3 scale, roteul, pos, pos_orig_old, pos_orig;
 
         pos_orig_old = t3d_vec3_scale(&obj->position_a, MODEL_SCALE);
         pos_orig = t3d_vec3_scale(&obj->position_b, MODEL_SCALE);
-        t3d_vec3_lerp(&pos, &pos_orig_old, &pos_orig, subtick);
+        t3d_vec3_lerp(&pos, &pos_orig_old, &pos_orig, st);
         t3d_vec3_lerp(&roteul, &obj->rotation_euler_a,
-                      &obj->rotation_euler_b, subtick);
-        t3d_vec3_lerp(&scale, &obj->scale_a, &obj->scale_b, subtick);
-        t3d_mat4fp_from_srt_euler(obj->matrix, scale.v, roteul.v, pos.v);
+                      &obj->rotation_euler_b, st);
+        t3d_vec3_lerp(&scale, &obj->scale_a, &obj->scale_b, st);
+        t3d_mat4fp_from_srt_euler(obj->mtx, scale.v, roteul.v, pos.v);
 }
 
 void object_destroy(struct object *obj)
 {
-        rspq_block_free(obj->displaylist);
-        free_uncached(obj->matrix);
-        t3d_model_free(obj->model);
+        rspq_block_free(obj->dl);
+        free_uncached(obj->mtx);
+        t3d_model_free(obj->mdl);
 }
