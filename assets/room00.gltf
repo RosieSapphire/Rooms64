@@ -59,6 +59,15 @@
 			"name":"Room"
 		},
 		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
 			"name":"DoorPos",
 			"translation":[
 				0,

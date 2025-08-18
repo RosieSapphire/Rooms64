@@ -120,7 +120,7 @@ int main(void)
                                             T3D_DEG_TO_RAD(VIEWPORT_FOV_DEG),
                                             VIEWPORT_NEAR, VIEWPORT_FAR);
                 player_to_view_matrix(&player, &viewport, subtick);
-                room_setup_matrices(&room_cur, subtick);
+                room_setup_matrices(&room_cur, room_ind, subtick);
 
                 /* Rendering */
                 rdpq_attach(display_get(), display_get_zbuf());

@@ -26,9 +26,11 @@ endif
 ASSETS_PNG := $(wildcard assets/*.png)
 ASSETS_WAV := $(wildcard assets/*.wav)
 ASSETS_GLTF := $(wildcard assets/*.gltf)
+ASSETS_ROOM := $(wildcard assets/room*.gltf)
 ASSETS_CONV := $(ASSETS_PNG:assets/%.png=filesystem/%.sprite) \
 	       $(ASSETS_WAV:assets/%.wav=filesystem/%.wav64) \
 	       $(ASSETS_GLTF:assets/%.gltf=filesystem/%.t3dm) \
+	       $(ASSETS_ROOM:assets/%.gltf=filesystem/%.room)
 
 final: $(ROM)
 $(ROM): N64_ROM_TITLE="Rooms 64"
@@ -38,7 +40,9 @@ $(ELF): $(O_FILES)
 
 AUDIOCONV_FLAGS := --wav-compress $(COMPRESS_LEVEL)
 MKSPRITE_FLAGS := --compress $(COMPRESS_LEVEL)
-MKMODEL_FLAGS := --compress $(COMPRESS_LEVEL)
+MKASSET_FLAGS := --compress $(COMPRESS_LEVEL)
+
+GLTF_TO_ROOM := tools/gltf-object-extractor/gltf-object-extractor
 
 filesystem/%.sprite: assets/%.png
 	@mkdir -p $(dir $@)
@@ -54,7 +58,13 @@ filesystem/%.t3dm: assets/%.gltf
 	@mkdir -p $(dir $@)
 	@echo "    [T3D-MODEL] $@"
 	$(T3D_GLTF_TO_3D) "$<" $@ --base-scale=$(MODEL_SCALE)
-	$(N64_BINDIR)/mkasset $(MKMODEL_FLAGS) -o $(dir $@) $@
+	$(N64_BINDIR)/mkasset $(MKASSET_FLAGS) -o $(dir $@) $@
+
+filesystem/%.room: assets/%.gltf
+	@mkdir -p $(dir $@)
+	@echo "    [ROOM] $@"
+	$(GLTF_TO_ROOM) $< $@
+	$(N64_BINDIR)/mkasset $(MKASSET_FLAGS) -o $(dir $@) $@
 
 .PHONY: clean todo
 
