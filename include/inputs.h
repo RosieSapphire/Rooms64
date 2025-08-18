@@ -18,6 +18,11 @@ enum {
         BTN_COUNT
 };
 
+#define INPUT_PRESS(NEW, OLD, BTN) \
+        ((NEW).btn[(BTN)] && ((NEW).btn[(BTN)] ^ (OLD).btn[(BTN)]))
+#define INPUT_PRESS_PTR(NEW, OLD, BTN) \
+        ((NEW)->btn[(BTN)] && ((NEW)->btn[(BTN)] ^ (OLD)->btn[(BTN)]))
+
 struct inputs {
         T3DVec2 stick;
         float stick_mag;

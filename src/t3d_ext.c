@@ -119,18 +119,6 @@ T3DVec3 t3d_vec3_one(void)
         return t3d_vec3_make(1.f, 1.f, 1.f);
 }
 
-T3DVec3 t3d_vec3_scale(const T3DVec3 *inp, const float mul)
-{
-        int i;
-        T3DVec3 out;
-
-        out = *inp;
-        for (i = 0; i < 3; ++i)
-                out.v[i] *= mul;
-
-        return out;
-}
-
 T3DVec3 t3d_vec3_normalize(const T3DVec3 *v)
 {
         T3DVec3 vec;

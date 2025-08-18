@@ -99,7 +99,7 @@ int main(void)
 
                         player_update(&player, &inp_new, fixed_time);
                         room_ind_prev = room_ind;
-                        room_ind = room_update(&room_cur, &inp_old,
+                        room_ind = room_update(&room_cur, room_ind, &inp_old,
                                                &inp_new, fixed_time);
 
                         if (room_ind_prev ^ room_ind) {

@@ -32,8 +32,8 @@ void object_setup_matrix(struct object *obj, const float st)
 {
         T3DVec3 scale, roteul, pos, pos_orig_old, pos_orig;
 
-        pos_orig_old = t3d_vec3_scale(&obj->position_a, MODEL_SCALE);
-        pos_orig = t3d_vec3_scale(&obj->position_b, MODEL_SCALE);
+        t3d_vec3_scale(&pos_orig_old, &obj->position_a, MODEL_SCALE);
+        t3d_vec3_scale(&pos_orig, &obj->position_b, MODEL_SCALE);
         t3d_vec3_lerp(&pos, &pos_orig_old, &pos_orig, st);
         t3d_vec3_lerp(&roteul, &obj->rotation_euler_a,
                       &obj->rotation_euler_b, st);

@@ -35,18 +35,11 @@ struct room room_init_from_index(const uint16_t ind)
         return r;
 }
 
-uint16_t room_update(struct room *r, const struct inputs *inp_old,
+uint16_t room_update(struct room *r, const uint16_t r_ind,
+                     const struct inputs *inp_old,
                      const struct inputs *inp_new, const float ft)
 {
-        static uint16_t bad = 0;
-
-        if (inp_new->btn[BTN_A] &&
-            (inp_new->btn[BTN_A] ^ inp_old->btn[BTN_A])) {
-                debugf("PRESSED A!\n");
-                bad ^= 1;
-        }
-
-        return bad;
+        return r_ind ^ INPUT_PRESS_PTR(inp_new, inp_old, BTN_A);
 }
 
 void room_setup_matrices(struct room *r, const float st)

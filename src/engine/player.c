@@ -89,7 +89,7 @@ static void player_update_friction(struct player *p, const float ft)
                 new_speed = 0.f;
 
         new_speed /= speed;
-        p->velocity = t3d_vec3_scale(&p->velocity, new_speed);
+        t3d_vec3_scale(&p->velocity, &p->velocity, new_speed);
 }
 
 static void player_update_moving(struct player *p, const struct inputs *inp,
@@ -119,14 +119,14 @@ static void player_update_moving(struct player *p, const struct inputs *inp,
         forw_move.v[2] = 0.f;
         forw_move = t3d_vec3_normalize(&forw_move);
 
-        forw_move = t3d_vec3_scale(&forw_move, accel_dir.v[1]);
-        right_move = t3d_vec3_scale(&right_move, accel_dir.v[0]);
+        t3d_vec3_scale(&forw_move, &forw_move, accel_dir.v[1]);
+        t3d_vec3_scale(&right_move, &right_move, accel_dir.v[0]);
 
         t3d_vec3_add(&move_vec, &forw_move, &right_move);
         t3d_vec3_normalize(&move_vec);
         move_speed = ((inp->btn[BTN_Z]) ? PLAYER_MAX_SPEED_FAST :
                                           PLAYER_MAX_SPEED_SLOW) * ft;
-        move_vec = t3d_vec3_scale(&move_vec, move_speed * ft);
+        t3d_vec3_scale(&move_vec, &move_vec, move_speed * ft);
 
         t3d_vec3_add(&p->velocity, &p->velocity, &move_vec);
 
@@ -215,7 +215,7 @@ void player_to_view_matrix(const struct player *p, T3DViewport *vp,
         head_offset = t3d_vec3_make(0.f, 0.f, PLAYER_HEIGHT);
         t3d_vec3_lerp(&eye, &p->position_a, &p->position_b, subtick);
         t3d_vec3_add(&eye, &eye, &head_offset);
-        eye = t3d_vec3_scale(&eye, MODEL_SCALE);
+        t3d_vec3_scale(&eye, &eye, MODEL_SCALE);
 
         /* Focus. */
         forw_dir = player_get_forward_dir(p, subtick, true);

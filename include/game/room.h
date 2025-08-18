@@ -13,7 +13,8 @@ struct room {
 };
 
 struct room room_init_from_index(const uint16_t ind);
-uint16_t room_update(struct room *r, const struct inputs *inp_old,
+uint16_t room_update(struct room *r, const uint16_t r_ind,
+                     const struct inputs *inp_old,
                      const struct inputs *inp_new, const float ft);
 void room_setup_matrices(struct room *r, const float st);
 void room_render(const struct room *r);
