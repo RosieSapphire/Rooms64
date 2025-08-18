@@ -18,6 +18,14 @@ struct room room_init_from_index(const uint16_t ind)
         struct room r;
 
         r.mdl = t3d_model_load(room_paths[ind]);
+        {
+                T3DModelIter it;
+
+                it = t3d_model_iter_create(r.mdl, T3D_CHUNK_TYPE_MATERIAL);
+                while (t3d_model_iter_next(&it))
+                        debugf("%s\n", it.material->name);
+        }
+
         r.mtx = malloc_uncached(sizeof(*r.mtx));
 
         rspq_block_begin();

@@ -1,3 +1,5 @@
+/* FIXME: Remove the run button for this game. */
+
 #include "engine/player.h"
 
 #include "util.h"
