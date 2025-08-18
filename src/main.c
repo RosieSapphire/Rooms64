@@ -1,7 +1,6 @@
 #include <libdragon.h>
 #include <t3d/t3d.h>
 #include <t3d/t3dmodel.h>
-#include <string.h>
 
 #include "util.h"
 #include "inputs.h"
