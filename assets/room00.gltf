@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v4.0.44",
+		"generator":"Khronos glTF Blender I/O v4.0.43",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -10,9 +10,16 @@
 				"fast64":{
 					"sm64":{
 						"exportType":0,
-						"version":1
+						"version":3,
+						"address_converter":{
+							"version":1
+						},
+						"combined_export":{}
 					},
-					"settings":{},
+					"settings":{
+						"internal_game_update_ver":1,
+						"dont_ask_color_management":1
+					},
 					"renderSettings":{}
 				},
 				"opLargeTextureProperty":{
@@ -91,26 +98,27 @@
 					"tex0":{
 						"tex_set":1,
 						"tex":{
-							"name":"square_1m.i4.png",
+							"name":"square.i4.png",
 							"type":"Image"
 						},
 						"tile_scroll":{},
 						"menu":1,
 						"S":{
-							"mask":6,
+							"mirror":1,
+							"mask":4,
 							"shift":0,
 							"low":0.0,
-							"high":63.0,
-							"clamp":0
+							"high":15.0
 						},
 						"T":{
-							"mask":6,
+							"mirror":1,
+							"mask":4,
 							"shift":0,
 							"low":0.0,
-							"high":63.0,
-							"clamp":0
+							"high":15.0
 						},
-						"tex_format":1
+						"tex_format":0,
+						"autoprop":1
 					},
 					"tex1":{
 						"tex_set":1,
@@ -222,11 +230,11 @@
 						"g_lod":0,
 						"g_shade_smooth":1,
 						"g_clipping":0,
-						"g_mdsft_alpha_dither":3,
-						"g_mdsft_rgb_dither":1,
+						"g_mdsft_alpha_dither":2,
+						"g_mdsft_rgb_dither":0,
 						"g_mdsft_combkey":0,
 						"g_mdsft_textconv":2,
-						"g_mdsft_text_filt":2,
+						"g_mdsft_text_filt":0,
 						"g_mdsft_textlut":0,
 						"g_mdsft_textlod":0,
 						"g_mdsft_textdetail":0,
@@ -237,7 +245,7 @@
 						"g_mdsft_alpha_compare":0,
 						"g_mdsft_zsrcsel":0,
 						"clip_ratio":1,
-						"set_rendermode":1,
+						"set_rendermode":0,
 						"rendermode_advanced_enabled":0,
 						"rendermode_preset_cycle_1":1,
 						"rendermode_preset_cycle_2":1,
@@ -272,13 +280,16 @@
 					"tex_scale":[
 						1.0,
 						1.0
-					]
+					],
+					"scale_autoprop":1,
+					"set_ambient_from_light":1
 				},
 				"ootMaterial":{},
+				"objex_bonus":{},
 				"is_f3d":1,
-				"mat_ver":5,
+				"mat_ver":6,
 				"f3d_update_flag":0,
-				"menu_tab":1
+				"menu_tab":3
 			},
 			"name":"material",
 			"pbrMetallicRoughness":{}

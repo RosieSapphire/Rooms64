@@ -32,7 +32,7 @@ int main(void)
 
         /* Initialize Libdragon. */
         display_init(RESOLUTION_320x240, DEPTH_16_BPP, 3,
-                     GAMMA_NONE, FILTERS_RESAMPLE_ANTIALIAS);
+                     GAMMA_NONE, FILTERS_RESAMPLE);
         rdpq_init();
         joypad_init();
 #ifdef DEBUG
@@ -69,13 +69,13 @@ int main(void)
 
         light_direction = t3d_vec3_make(-1.f, 1.f, 0.f);
         t3d_vec3_norm(&light_direction);
-        light_col_direction[0] = 0xEE;
-        light_col_direction[1] = 0xAA;
-        light_col_direction[2] = 0xAA;
+        light_col_direction[0] = 0xFF;
+        light_col_direction[1] = 0xFF;
+        light_col_direction[2] = 0xFF;
         light_col_direction[3] = 0xFF;
-        light_col_ambi[0] = 0x19;
-        light_col_ambi[1] = 0x32;
-        light_col_ambi[2] = 0x4B;
+        light_col_ambi[0] = 0x7F;
+        light_col_ambi[1] = 0x7F;
+        light_col_ambi[2] = 0x7F;
         light_col_ambi[3] = 0xFF;
 
         /* Main loop. */
@@ -104,8 +104,8 @@ int main(void)
                         if (room_ind_prev ^ room_ind) {
                                 debugf("ROOM INDEX CHANGED!\n");
                                 room_terminate(&room_cur);
-                                room_cur = room_init_from_index(room_ind);
                                 rspq_wait();
+                                room_cur = room_init_from_index(room_ind);
                         }
                 }
 
@@ -126,6 +126,7 @@ int main(void)
                 rdpq_attach(display_get(), display_get_zbuf());
                 t3d_frame_start();
                 rdpq_mode_dithering(DITHER_NOISE_NONE);
+                rdpq_mode_antialias(AA_NONE);
 
                 t3d_viewport_attach(&viewport);
                 {
