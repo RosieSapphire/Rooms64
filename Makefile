@@ -1,3 +1,6 @@
+# Game Config
+NOCLIPPING_ENABLED := 0
+
 DEBUG_ENABLED := 1
 COMPRESS_LEVEL := 3
 MODEL_SCALE := 100
@@ -21,6 +24,10 @@ N64_CFLAGS += -Wall -Wextra -Werror -Ofast $(INC_FLAGS) \
 	      -DCOMPRESS_LEVEL=$(COMPRESS_LEVEL) -DMODEL_SCALE=$(MODEL_SCALE)
 ifeq ($(DEBUG_ENABLED),1)
 	N64_CFLAGS += -DDEBUG
+endif
+
+ifeq ($(NOCLIPPING_ENABLED),1)
+	N64_CFLAGS += -DPLAYER_NOCLIP
 endif
 
 ASSETS_PNG := $(wildcard assets/*.png)

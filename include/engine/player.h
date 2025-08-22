@@ -5,9 +5,6 @@
 #include "util.h"
 #include "inputs.h"
 
-/* Uncomment this to enable noclipping with the start button. */
-/* #define PLAYER_NOCLIP */
-
 #define PLAYER_HEIGHT 1.25f
 
 enum {
