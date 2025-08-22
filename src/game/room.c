@@ -4,11 +4,7 @@
 
 #include "t3d_ext.h"
 
-enum {
-        ROOM_00,
-        ROOM_01,
-        ROOM_CNT
-};
+#define ROOM_CNT 1000
 
 static const char *room_mdl_paths[ROOM_CNT] = {
         "rom:/room00.t3dm",
@@ -20,17 +16,31 @@ static const char *room_dat_paths[ROOM_CNT] = {
         "rom:/room01.room"
 };
 
-static T3DVec3 stored_door_positions[ROOM_CNT];
+static T3DVec3 relative_door_positions[ROOM_TYPE_CNT];
+static struct room cached_rooms[ROOM_CNT];
 
 static uint16_t room_ind_prev = 0;
-static uint16_t room_ind;
+static uint16_t room_ind = 0;
 static struct room room_cur;
 static struct aabb room_cur_door_bb;
 
-void room_init_from_index(const uint16_t ind)
+static T3DVec3 get_absolute_door_pos(const uint16_t ind)
 {
-        room_ind = ind;
-        room_cur.mdl = t3d_model_load(room_mdl_paths[ind]);
+        T3DVec3 total;
+        int i;
+
+        total = t3d_vec3_zero();
+        for (i = 1; i <= ind; ++i)
+                t3d_vec3_add(&total, &total,
+                             relative_door_positions +
+                             cached_rooms[i - 1].type);
+
+        return total;
+}
+
+void room_load_next(const uint8_t type)
+{
+        room_cur.mdl = t3d_model_load(room_mdl_paths[type]);
         room_cur.mtx = malloc_uncached(sizeof(*room_cur.mtx));
 
         rspq_block_begin();
@@ -43,25 +53,27 @@ void room_init_from_index(const uint16_t ind)
         {
                 float *pos_in;
 
-                pos_in = (float *)asset_load(room_dat_paths[ind], NULL);
-                stored_door_positions[ind] =
+                pos_in = (float *)asset_load(room_dat_paths[type], NULL);
+                /* TODO: This gets overwritten a bunch. Maybe just cache it. */
+                relative_door_positions[type] =
                         t3d_vec3_make(pos_in[0], pos_in[1], pos_in[2]);
-                t3d_vec3_scale(stored_door_positions + ind,
-                               stored_door_positions + ind, MODEL_SCALE);
+                t3d_vec3_scale(relative_door_positions + type,
+                               relative_door_positions + type, MODEL_SCALE);
         }
 
         /* Make bounding box for door. */
         {
-                T3DVec3 bb_min, bb_max;
+                T3DVec3 bb_min, bb_max, abs_door_pos;
 
-                bb_min = t3d_vec3_make(-32.f, 0.f, -32.f);
-                bb_max = t3d_vec3_make(32.f, 64.f, 32.f);
-                room_cur_door_bb = aabb_make(stored_door_positions + ind,
-                                             &bb_min, &bb_max);
+                bb_min = t3d_vec3_make(-128.f, -16.f, 0.f);
+                bb_max = t3d_vec3_make(128.f, 16.f, 256.f);
+                abs_door_pos = get_absolute_door_pos(room_ind + 1);
+                room_cur_door_bb = aabb_make(&abs_door_pos, &bb_min, &bb_max);
         }
 
-        room_cur.obj_cnt = 0;
         room_cur.objs = NULL;
+        room_cur.obj_cnt = 0;
+        room_cur.type = type;
 
         if (!room_cur.obj_cnt)
                 return;
@@ -70,36 +82,25 @@ void room_init_from_index(const uint16_t ind)
         room_cur.objs = malloc(sizeof(*room_cur.objs) * room_cur.obj_cnt);
 }
 
-void room_update(const T3DVec3 *player_pos, const float ft)
+void room_update(const T3DVec3 *player_pos)
 {
         T3DVec3 player_pos_real;
 
+        /* debugf("%d -> %d\n", room_ind_prev, room_ind); */
         room_ind_prev = room_ind;
 
         t3d_vec3_scale(&player_pos_real, player_pos, MODEL_SCALE);
         if (aabb_does_point_intersect(&room_cur_door_bb, &player_pos_real)) {
                 if (++room_ind >= ROOM_CNT)
-                        room_ind = 0;
+                        assertf(0, "Game win\n");
         }
 
         if (!(room_ind_prev ^ room_ind))
                 return;
 
-        debugf("ROOM INDEX CHANGED!\n");
         room_terminate();
         rspq_wait();
-        room_init_from_index(room_ind);
-}
-
-static T3DVec3 room_get_absolute_door_pos(const uint16_t ind)
-{
-        T3DVec3 total = { 0 };
-        int i;
-
-        for (i = 1; i <= ind; ++i)
-                t3d_vec3_add(&total, &total, stored_door_positions + i - 1);
-
-        return total;
+        room_load_next(ROOM_TYPE_00);
 }
 
 void room_setup_matrices(const float st)
@@ -109,7 +110,8 @@ void room_setup_matrices(const float st)
 
         scale = t3d_vec3_one();
         rot = t3d_vec3_zero();
-        pos = room_get_absolute_door_pos(room_ind);
+        pos = get_absolute_door_pos(room_ind);
+        debugf_t3d_vec3("Abs Door Pos", &pos);
         t3d_mat4fp_from_srt_euler(room_cur.mtx, scale.v, rot.v, pos.v);
 
         for (i = 0; i < room_cur.obj_cnt; ++i)
@@ -124,7 +126,7 @@ void room_render(void)
         for (i = 0; i < room_cur.obj_cnt; ++i)
                 rspq_block_run(room_cur.objs[i].dl);
 
-        aabb_render(&room_cur_door_bb);
+        aabb_render(&room_cur_door_bb, 0x183048FF);
 }
 
 void room_terminate(void)

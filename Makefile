@@ -1,5 +1,6 @@
 # Game Config
 NOCLIPPING_ENABLED := 1
+RENDER_HITBOXES := 1
 
 DEBUG_ENABLED := 1
 COMPRESS_LEVEL := 3
@@ -28,6 +29,10 @@ endif
 
 ifeq ($(NOCLIPPING_ENABLED),1)
 	N64_CFLAGS += -DPLAYER_NOCLIP
+endif
+
+ifeq ($(RENDER_HITBOXES),1)
+	N64_CFLAGS += -DAABB_RENDER
 endif
 
 ASSETS_PNG := $(wildcard assets/*.png)

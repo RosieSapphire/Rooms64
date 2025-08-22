@@ -52,13 +52,13 @@ int main(void)
         viewport = t3d_viewport_create();
 
         /* Initialize game. */
-        room_init_from_index(0);
+        room_load_next(ROOM_TYPE_00);
 
         {
                 T3DVec3 pos;
                 float yaw, pitch;
 
-                pos = t3d_vec3_make(0.f, 1.25f, 0.f);
+                pos = t3d_vec3_make(0.f, -3.4f, 0.f);
                 yaw = -(M_PI * .5f);
                 pitch = 0.f;
                 player = player_init(&pos, yaw, pitch, PLAYER_MODE_STANDARD);
@@ -70,9 +70,9 @@ int main(void)
         light_col_direction[1] = 0xFF;
         light_col_direction[2] = 0xFF;
         light_col_direction[3] = 0xFF;
-        light_col_ambi[0] = 0x7F;
-        light_col_ambi[1] = 0x7F;
-        light_col_ambi[2] = 0x7F;
+        light_col_ambi[0] = 0x20;
+        light_col_ambi[1] = 0x20;
+        light_col_ambi[2] = 0x20;
         light_col_ambi[3] = 0xFF;
 
         /* Main loop. */
@@ -92,7 +92,7 @@ int main(void)
                         inp_new = inputs_get_from_libdragon();
 
                         player_update(&player, &inp_new, &inp_old, fixed_time);
-                        room_update(&player.position_b, fixed_time);
+                        room_update(&player.position_b);
                 }
 
                 /* Updating -> Rendering */
