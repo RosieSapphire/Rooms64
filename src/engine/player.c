@@ -1,5 +1,3 @@
-/* FIXME: Remove the run button for this game. */
-
 #include "engine/player.h"
 
 #include "util.h"
@@ -12,8 +10,7 @@
 #define PLAYER_STOP_SPEED .01f
 #define PLAYER_FRICTION 6.f
 
-#define PLAYER_MAX_SPEED_SLOW 24.f
-#define PLAYER_MAX_SPEED_FAST 48.f
+#define PLAYER_MAX_SPEED 0.82f
 
 struct player player_create(const T3DVec3 *spawn_pos, const float spawn_yaw,
                             const float spawn_pitch)
@@ -22,23 +19,14 @@ struct player player_create(const T3DVec3 *spawn_pos, const float spawn_yaw,
 
         p.position_a = *spawn_pos;
         p.position_b = p.position_a;
-        p.up_real = t3d_vec3_zup();
-        p.up_visual_a = p.up_real;
-        p.up_visual_b = p.up_real;
+        p.up = t3d_vec3_zup();
         p.velocity = t3d_vec3_zero();
-        p.head_wiggle_amount = .02f;
         p.yaw_tar = spawn_yaw;
         p.yaw_a = p.yaw_tar;
         p.yaw_b = p.yaw_tar;
-        p.yaw_offset_a = p.yaw_a;
-        p.yaw_offset_b = p.yaw_b;
         p.pitch_tar = spawn_pitch;
         p.pitch_a = p.pitch_tar;
         p.pitch_b = p.pitch_tar;
-        p.pitch_offset_a = p.pitch_a;
-        p.pitch_offset_b = p.pitch_b;
-        p.state_timer = 0.f;
-        p.state = PLAYER_STATE_STANDING;
 
         return p;
 }
@@ -49,7 +37,7 @@ static void player_update_turning(struct player *p, const struct inputs *inp,
         float turn_speed, pitch_mul, turn_lerp_t, pitch_limit;
 
         turn_speed = PLAYER_TURN_SPEED_SLOW;
-        if ((p->state == PLAYER_STATE_STANDING) && inp->btn[BTN_Z])
+        if (inp->btn[BTN_Z])
                 turn_speed = PLAYER_TURN_SPEED_FAST;
         p->yaw_tar -= inp->stick.v[0] * turn_speed * ft;
 
@@ -99,7 +87,6 @@ static void player_update_moving(struct player *p, const struct inputs *inp,
 {
         T3DVec3 forw_move, right_move, move_vec;
         T3DVec2 accel_dir;
-        float move_speed;
 
         accel_dir.v[0] = inp->btn[BTN_C_RIGHT] - inp->btn[BTN_C_LEFT];
         accel_dir.v[1] = inp->btn[BTN_C_UP] - inp->btn[BTN_C_DOWN];
@@ -107,15 +94,12 @@ static void player_update_moving(struct player *p, const struct inputs *inp,
         if (!accel_dir.v[0] && !accel_dir.v[1]) {
                 p->position_a = p->position_b;
                 t3d_vec3_add(&p->position_b, &p->position_b, &p->velocity);
-                p->state = PLAYER_STATE_STANDING;
                 return;
         }
 
-        p->state = PLAYER_STATE_MOVING;
-
         accel_dir = t3d_vec2_normalize(&accel_dir);
 
-        forw_move = player_get_forward_dir(p, 1.f, false);
+        forw_move = player_get_forward_dir(p, 1.f);
         right_move = player_get_right_dir(p, &forw_move);
 
         forw_move.v[2] = 0.f;
@@ -126,9 +110,7 @@ static void player_update_moving(struct player *p, const struct inputs *inp,
 
         t3d_vec3_add(&move_vec, &forw_move, &right_move);
         t3d_vec3_normalize(&move_vec);
-        move_speed = ((inp->btn[BTN_Z]) ? PLAYER_MAX_SPEED_FAST :
-                                          PLAYER_MAX_SPEED_SLOW) * ft;
-        t3d_vec3_scale(&move_vec, &move_vec, move_speed * ft);
+        t3d_vec3_scale(&move_vec, &move_vec, PLAYER_MAX_SPEED * ft);
 
         t3d_vec3_add(&p->velocity, &p->velocity, &move_vec);
 
@@ -136,6 +118,7 @@ static void player_update_moving(struct player *p, const struct inputs *inp,
         t3d_vec3_add(&p->position_b, &p->position_b, &p->velocity);
 }
 
+#if 0
 static void player_update_head_wiggle(struct player *p)
 {
         float wigglex0, wiggley0, wigglex1, wiggley1, tscale;
@@ -154,25 +137,17 @@ static void player_update_head_wiggle(struct player *p)
         p->yaw_offset_b = wigglex1;
         p->pitch_offset_b = wiggley1;
 }
+#endif
 
 void player_update(struct player *p, const struct inputs *inp, const float ft)
 {
-        uint8_t state_old;
-
-        state_old = p->state;
-
         player_update_turning(p, inp, ft);
         player_update_friction(p, ft);
         player_update_moving(p, inp, ft);
-        player_update_head_wiggle(p);
-
-        p->state_timer += ft;
-        if (p->state ^ state_old)
-                p->state_timer = 0.f;
+        /* player_update_head_wiggle(p); */
 }
 
-T3DVec3 player_get_forward_dir(const struct player *p, const float subtick,
-                               bool get_offset)
+T3DVec3 player_get_forward_dir(const struct player *p, const float subtick)
 {
         float yaw_a, yaw_b, yaw, pitch_a, pitch_b, pitch, cos_pitch;
         T3DVec3 dir;
@@ -182,13 +157,6 @@ T3DVec3 player_get_forward_dir(const struct player *p, const float subtick,
         yaw_b = p->yaw_b;
         pitch_a = p->pitch_a;
         pitch_b = p->pitch_b;
-
-        if (get_offset) {
-                yaw_a += p->yaw_offset_a;
-                yaw_b += p->yaw_offset_b;
-                pitch_a += p->pitch_offset_a;
-                pitch_b += p->pitch_offset_b;
-        }
 
         yaw = lerpf(yaw_a, yaw_b, subtick);
         pitch = lerpf(pitch_a, pitch_b, subtick);
@@ -203,7 +171,7 @@ T3DVec3 player_get_right_dir(const struct player *p, const T3DVec3 *forw_dir)
 {
         T3DVec3 right_dir;
 
-        t3d_vec3_cross(&right_dir, forw_dir, &p->up_real);
+        t3d_vec3_cross(&right_dir, forw_dir, &p->up);
 
         return right_dir;
 }
@@ -211,7 +179,7 @@ T3DVec3 player_get_right_dir(const struct player *p, const T3DVec3 *forw_dir)
 void player_to_view_matrix(const struct player *p, T3DViewport *vp,
                            const float subtick)
 {
-        T3DVec3 head_offset, eye, forw_dir, focus, up;
+        T3DVec3 head_offset, eye, forw_dir, focus;
 
         /* Eye. */
         head_offset = t3d_vec3_make(0.f, 0.f, PLAYER_HEIGHT);
@@ -220,10 +188,8 @@ void player_to_view_matrix(const struct player *p, T3DViewport *vp,
         t3d_vec3_scale(&eye, &eye, MODEL_SCALE);
 
         /* Focus. */
-        forw_dir = player_get_forward_dir(p, subtick, true);
+        forw_dir = player_get_forward_dir(p, subtick);
         t3d_vec3_add(&focus, &eye, &forw_dir);
 
-        t3d_vec3_lerp(&up, &p->up_visual_a, &p->up_visual_b, subtick);
-
-        t3d_viewport_look_at(vp, &eye, &focus, &up);
+        t3d_viewport_look_at(vp, &eye, &focus, &p->up);
 }
