@@ -5,12 +5,15 @@
 #include "util.h"
 #include "inputs.h"
 
+/* Uncomment this to enable noclipping with the start button. */
+/* #define PLAYER_NOCLIP */
+
 #define PLAYER_HEIGHT 1.25f
 
 enum {
-        PLAYER_STATE_STANDING,
-        PLAYER_STATE_MOVING,
-        PLAYER_STATE_COUNT
+        PLAYER_MODE_STANDARD,
+        PLAYER_MODE_NOCLIP,
+        PLAYER_MODE_COUNT
 };
 
 struct player {
@@ -24,12 +27,14 @@ struct player {
         float pitch_tar;
         float pitch_a;
         float pitch_b;
+        uint8_t mode;
 };
 
-struct player player_create(const T3DVec3 *spawn_pos, const float spawn_yaw,
-                            const float spawn_pitch);
+struct player player_init(const T3DVec3 *spawn_pos, const float spawn_yaw,
+                          const float spawn_pitch, const uint8_t mode);
 T3DVec3 player_get_forward_dir(const struct player *p, const float subtick);
 T3DVec3 player_get_right_dir(const struct player *p, const T3DVec3 *forw_dir);
-void player_update(struct player *p, const struct inputs *inp, const float ft);
+void player_update(struct player *p, const struct inputs *inp_new,
+                   const struct inputs *inp_old, const float ft);
 void player_to_view_matrix(const struct player *p, T3DViewport *vp,
                            const float subtick);

@@ -6,6 +6,8 @@ enum {
         BTN_A,
         BTN_B,
         BTN_Z,
+        BTN_L,
+        BTN_R,
         BTN_START,
         BTN_C_UP,
         BTN_C_DOWN,

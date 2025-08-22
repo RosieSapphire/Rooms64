@@ -61,7 +61,7 @@ int main(void)
                 pos = t3d_vec3_make(0.f, 1.25f, 0.f);
                 yaw = -(M_PI * .5f);
                 pitch = 0.f;
-                player = player_create(&pos, yaw, pitch);
+                player = player_init(&pos, yaw, pitch, PLAYER_MODE_STANDARD);
         }
 
         light_direction = t3d_vec3_make(-1.f, 1.f, 0.f);
@@ -91,7 +91,7 @@ int main(void)
                         inp_old = inp_new;
                         inp_new = inputs_get_from_libdragon();
 
-                        player_update(&player, &inp_new, fixed_time);
+                        player_update(&player, &inp_new, &inp_old, fixed_time);
                         room_update(&player.position_b, fixed_time);
                 }
 

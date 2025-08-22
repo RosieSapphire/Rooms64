@@ -47,6 +47,8 @@ struct inputs inputs_get_from_libdragon(void)
         inp_dst.btn[BTN_A] = inp_src.btn.a;
         inp_dst.btn[BTN_B] = inp_src.btn.b;
         inp_dst.btn[BTN_Z] = inp_src.btn.z;
+        inp_dst.btn[BTN_L] = inp_src.btn.l;
+        inp_dst.btn[BTN_R] = inp_src.btn.r;
         inp_dst.btn[BTN_START] = inp_src.btn.start;
         inp_dst.btn[BTN_C_UP] = inp_src.btn.c_up;
         inp_dst.btn[BTN_C_DOWN] = inp_src.btn.c_down;

@@ -11,9 +11,11 @@
 #define PLAYER_FRICTION 6.f
 
 #define PLAYER_MAX_SPEED 0.82f
+#define PLAYER_NOCLIP_SPEED_SLOW 4.2f
+#define PLAYER_NOCLIP_SPEED_FAST 12.2f
 
-struct player player_create(const T3DVec3 *spawn_pos, const float spawn_yaw,
-                            const float spawn_pitch)
+struct player player_init(const T3DVec3 *spawn_pos, const float spawn_yaw,
+                          const float spawn_pitch, const uint8_t mode)
 {
         struct player p;
 
@@ -27,12 +29,14 @@ struct player player_create(const T3DVec3 *spawn_pos, const float spawn_yaw,
         p.pitch_tar = spawn_pitch;
         p.pitch_a = p.pitch_tar;
         p.pitch_b = p.pitch_tar;
+        p.mode = mode;
 
         return p;
 }
 
-static void player_update_turning(struct player *p, const struct inputs *inp,
-                                  const float ft)
+static void player_update_turning_normal(struct player *p,
+                                         const struct inputs *inp,
+                                         const float ft)
 {
         float turn_speed, pitch_mul, turn_lerp_t, pitch_limit;
 
@@ -64,6 +68,34 @@ static void player_update_turning(struct player *p, const struct inputs *inp,
                 p->pitch_b = p->pitch_tar;
 }
 
+#ifdef PLAYER_NOCLIP
+static void player_update_turning_noclip(struct player *p,
+                                         const struct inputs *inp,
+                                         const float ft)
+{
+        float turn_speed, pitch_limit;
+
+        turn_speed = PLAYER_TURN_SPEED_SLOW;
+        if (inp->btn[BTN_Z])
+                turn_speed = PLAYER_TURN_SPEED_FAST;
+
+        p->yaw_tar -= inp->stick.v[0] * turn_speed * ft;
+        p->pitch_tar -= inp->stick.v[1] * turn_speed * ft;
+
+        pitch_limit = T3D_DEG_TO_RAD(85.f);
+        if (p->pitch_tar > pitch_limit)
+                p->pitch_tar = pitch_limit;
+
+        if (p->pitch_tar < -pitch_limit)
+                p->pitch_tar = -pitch_limit;
+
+        p->yaw_a = p->yaw_b;
+        p->yaw_b = p->yaw_tar;
+        p->pitch_a = p->pitch_b;
+        p->pitch_b = p->pitch_tar;
+}
+#endif
+
 static void player_update_friction(struct player *p, const float ft)
 {
         float control, drop, speed, new_speed;
@@ -82,8 +114,9 @@ static void player_update_friction(struct player *p, const float ft)
         t3d_vec3_scale(&p->velocity, &p->velocity, new_speed);
 }
 
-static void player_update_moving(struct player *p, const struct inputs *inp,
-                                 const float ft)
+static void player_update_moving_normal(struct player *p,
+                                        const struct inputs *inp,
+                                        const float ft)
 {
         T3DVec3 forw_move, right_move, move_vec;
         T3DVec2 accel_dir;
@@ -104,6 +137,8 @@ static void player_update_moving(struct player *p, const struct inputs *inp,
 
         forw_move.v[2] = 0.f;
         forw_move = t3d_vec3_normalize(&forw_move);
+        right_move.v[2] = 0.f;
+        right_move = t3d_vec3_normalize(&right_move);
 
         t3d_vec3_scale(&forw_move, &forw_move, accel_dir.v[1]);
         t3d_vec3_scale(&right_move, &right_move, accel_dir.v[0]);
@@ -117,6 +152,46 @@ static void player_update_moving(struct player *p, const struct inputs *inp,
         p->position_a = p->position_b;
         t3d_vec3_add(&p->position_b, &p->position_b, &p->velocity);
 }
+
+#ifdef PLAYER_NOCLIP
+static void player_update_moving_noclip(struct player *p,
+                                        const struct inputs *inp,
+                                        const float ft)
+{
+        T3DVec3 forw_move, right_move, move_vec;
+        T3DVec2 input_dir;
+        float speed;
+
+        input_dir.v[0] = inp->btn[BTN_C_RIGHT] - inp->btn[BTN_C_LEFT];
+        input_dir.v[1] = inp->btn[BTN_C_UP] - inp->btn[BTN_C_DOWN];
+
+        if (!input_dir.v[0] && !input_dir.v[1]) {
+                p->position_a = p->position_b;
+                return;
+        }
+
+        input_dir = t3d_vec2_normalize(&input_dir);
+
+        forw_move = player_get_forward_dir(p, 1.f);
+        right_move = player_get_right_dir(p, &forw_move);
+
+        right_move.v[2] = 0.f;
+        right_move = t3d_vec3_normalize(&right_move);
+
+        t3d_vec3_scale(&forw_move, &forw_move, input_dir.v[1]);
+        t3d_vec3_scale(&right_move, &right_move, input_dir.v[0]);
+
+        t3d_vec3_add(&move_vec, &forw_move, &right_move);
+        t3d_vec3_normalize(&move_vec);
+
+        speed = (inp->btn[BTN_R]) ? PLAYER_NOCLIP_SPEED_FAST :
+                                    PLAYER_NOCLIP_SPEED_SLOW;
+        t3d_vec3_scale(&move_vec, &move_vec, speed * ft);
+
+        p->position_a = p->position_b;
+        t3d_vec3_add(&p->position_b, &p->position_b, &move_vec);
+}
+#endif
 
 #if 0
 static void player_update_head_wiggle(struct player *p)
@@ -139,12 +214,28 @@ static void player_update_head_wiggle(struct player *p)
 }
 #endif
 
-void player_update(struct player *p, const struct inputs *inp, const float ft)
+void player_update(struct player *p, const struct inputs *inp_new,
+                   const struct inputs *inp_old, const float ft)
 {
-        player_update_turning(p, inp, ft);
-        player_update_friction(p, ft);
-        player_update_moving(p, inp, ft);
-        /* player_update_head_wiggle(p); */
+
+#ifdef PLAYER_NOCLIP
+        p->mode ^= INPUT_PRESS_PTR(inp_new, inp_old, BTN_START);
+
+        switch (p->mode) {
+        case PLAYER_MODE_STANDARD:
+#endif
+                player_update_turning_normal(p, inp_new, ft);
+                player_update_friction(p, ft);
+                player_update_moving_normal(p, inp_new, ft);
+#ifdef PLAYER_NOCLIP
+                return;
+
+        case PLAYER_MODE_NOCLIP:
+                player_update_turning_noclip(p, inp_new, ft);
+                player_update_moving_noclip(p, inp_new, ft);
+                return;
+        }
+#endif
 }
 
 T3DVec3 player_get_forward_dir(const struct player *p, const float subtick)
