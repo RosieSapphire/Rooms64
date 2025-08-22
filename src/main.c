@@ -26,8 +26,6 @@ int main(void)
         T3DVec3 light_direction;
         uint8_t light_col_direction[4], light_col_ambi[4];
 
-        uint16_t room_ind;
-        struct room room_cur;
         struct player player;
 
         /* Initialize Libdragon. */
@@ -54,8 +52,7 @@ int main(void)
         viewport = t3d_viewport_create();
 
         /* Initialize game. */
-        room_ind = 0;
-        room_cur = room_init_from_index(room_ind);
+        room_init_from_index(0);
 
         {
                 T3DVec3 pos;
@@ -91,22 +88,11 @@ int main(void)
                 for (time_accumulated += display_get_delta_time();
                      time_accumulated >= fixed_time;
                      time_accumulated -= fixed_time) {
-                        uint16_t room_ind_prev;
-
                         inp_old = inp_new;
                         inp_new = inputs_get_from_libdragon();
 
                         player_update(&player, &inp_new, fixed_time);
-                        room_ind_prev = room_ind;
-                        room_ind = room_update(&room_cur, room_ind, &inp_old,
-                                               &inp_new, fixed_time);
-
-                        if (room_ind_prev ^ room_ind) {
-                                debugf("ROOM INDEX CHANGED!\n");
-                                room_terminate(&room_cur);
-                                rspq_wait();
-                                room_cur = room_init_from_index(room_ind);
-                        }
+                        room_update(&inp_old, &inp_new, fixed_time);
                 }
 
                 /* Updating -> Rendering */
@@ -120,7 +106,7 @@ int main(void)
                                             T3D_DEG_TO_RAD(VIEWPORT_FOV_DEG),
                                             VIEWPORT_NEAR, VIEWPORT_FAR);
                 player_to_view_matrix(&player, &viewport, subtick);
-                room_setup_matrices(&room_cur, room_ind, subtick);
+                room_setup_matrices(subtick);
 
                 /* Rendering */
                 rdpq_attach(display_get(), display_get_zbuf());
@@ -142,13 +128,13 @@ int main(void)
                                           &light_direction);
                 t3d_light_set_count(1);
 
-                room_render(&room_cur);
+                room_render();
 
                 rdpq_detach_show();
         }
 
         /* Terminate game. */
-        room_terminate(&room_cur);
+        room_terminate();
 
         /* Terminate Tiny3D. */
         t3d_destroy();

@@ -20,18 +20,21 @@ static const char *room_dat_paths[ROOM_CNT] = {
 
 static T3DVec3 stored_door_positions[ROOM_CNT];
 
-struct room room_init_from_index(const uint16_t ind)
-{
-        struct room r;
+static uint16_t room_ind_prev = 0;
+static uint16_t room_ind;
+static struct room room_cur;
 
-        r.mdl = t3d_model_load(room_mdl_paths[ind]);
-        r.mtx = malloc_uncached(sizeof(*r.mtx));
+void room_init_from_index(const uint16_t ind)
+{
+        room_ind = ind;
+        room_cur.mdl = t3d_model_load(room_mdl_paths[ind]);
+        room_cur.mtx = malloc_uncached(sizeof(*room_cur.mtx));
 
         rspq_block_begin();
-        t3d_matrix_push(r.mtx);
-        t3d_model_draw(r.mdl);
+        t3d_matrix_push(room_cur.mtx);
+        t3d_model_draw(room_cur.mdl);
         t3d_matrix_pop(1);
-        r.dl = rspq_block_end();
+        room_cur.dl = rspq_block_end();
 
         /* Load door position from file. */
         {
@@ -44,25 +47,33 @@ struct room room_init_from_index(const uint16_t ind)
                                stored_door_positions + ind, MODEL_SCALE);
         }
 
-        r.obj_cnt = 0;
-        r.objs = NULL;
+        room_cur.obj_cnt = 0;
+        room_cur.objs = NULL;
 
-        if (r.obj_cnt)
-                r.objs = malloc(sizeof(*r.objs) * r.obj_cnt);
+        if (!room_cur.obj_cnt)
+                return;
 
-        return r;
+        /* TODO: Load objects from file. */
+        room_cur.objs = malloc(sizeof(*room_cur.objs) * room_cur.obj_cnt);
 }
 
-uint16_t room_update(struct room *r, uint16_t r_ind,
-                     const struct inputs *inp_old,
-                     const struct inputs *inp_new, const float ft)
+void room_update(const struct inputs *inp_old,
+                 const struct inputs *inp_new, const float ft)
 {
+        room_ind_prev = room_ind;
+
         if (INPUT_PRESS_PTR(inp_new, inp_old, BTN_A)) {
-                if (++r_ind >= ROOM_CNT)
-                        r_ind = 0;
+                if (++room_ind >= ROOM_CNT)
+                        room_ind = 0;
         }
 
-        return r_ind;
+        if (!(room_ind_prev ^ room_ind))
+                return;
+
+        debugf("ROOM INDEX CHANGED!\n");
+        room_terminate();
+        rspq_wait();
+        room_init_from_index(room_ind);
 }
 
 static T3DVec3 room_get_absolute_door_pos(const uint16_t ind)
@@ -78,43 +89,43 @@ static T3DVec3 room_get_absolute_door_pos(const uint16_t ind)
         return total;
 }
 
-void room_setup_matrices(struct room *r, const uint16_t ind, const float st)
+void room_setup_matrices(const float st)
 {
         int i;
         T3DVec3 scale, rot, pos;
 
         scale = t3d_vec3_one();
         rot = t3d_vec3_zero();
-        pos = room_get_absolute_door_pos(ind);
-        t3d_mat4fp_from_srt_euler(r->mtx, scale.v, rot.v, pos.v);
+        pos = room_get_absolute_door_pos(room_ind);
+        t3d_mat4fp_from_srt_euler(room_cur.mtx, scale.v, rot.v, pos.v);
 
-        for (i = 0; i < r->obj_cnt; ++i)
-                object_setup_matrix(r->objs + i, st);
+        for (i = 0; i < room_cur.obj_cnt; ++i)
+                object_setup_matrix(room_cur.objs + i, st);
 }
 
-void room_render(const struct room *r)
+void room_render(void)
 {
         int i;
 
-        rspq_block_run(r->dl);
-        for (i = 0; i < r->obj_cnt; ++i)
-                rspq_block_run(r->objs[i].dl);
+        rspq_block_run(room_cur.dl);
+        for (i = 0; i < room_cur.obj_cnt; ++i)
+                rspq_block_run(room_cur.objs[i].dl);
 }
 
-void room_terminate(struct room *r)
+void room_terminate(void)
 {
-        if (r->obj_cnt) {
-                free(r->objs);
-                r->objs = NULL;
-                r->obj_cnt = 0;
+        if (room_cur.obj_cnt) {
+                free(room_cur.objs);
+                room_cur.objs = NULL;
+                room_cur.obj_cnt = 0;
         }
 
-        rspq_block_free(r->dl);
-        r->dl = NULL;
+        rspq_block_free(room_cur.dl);
+        room_cur.dl = NULL;
 
-        free_uncached(r->mtx);
-        r->mtx = NULL;
+        free_uncached(room_cur.mtx);
+        room_cur.mtx = NULL;
 
-        t3d_model_free(r->mdl);
-        r->mdl = NULL;
+        t3d_model_free(room_cur.mdl);
+        room_cur.mdl = NULL;
 }
