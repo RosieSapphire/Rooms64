@@ -92,7 +92,7 @@ int main(void)
                         inp_new = inputs_get_from_libdragon();
 
                         player_update(&player, &inp_new, fixed_time);
-                        room_update(&inp_old, &inp_new, fixed_time);
+                        room_update(&player.position_b, fixed_time);
                 }
 
                 /* Updating -> Rendering */

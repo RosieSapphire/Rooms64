@@ -57,12 +57,26 @@ void room_init_from_index(const uint16_t ind)
         room_cur.objs = malloc(sizeof(*room_cur.objs) * room_cur.obj_cnt);
 }
 
-void room_update(const struct inputs *inp_old,
-                 const struct inputs *inp_new, const float ft)
+static bool is_touching_hitbox_for_next_room(const T3DVec3 *player_pos)
+{
+        T3DVec3 hitbox_pos, player_pos_real, dist_vec;
+        float distf;
+
+        hitbox_pos = stored_door_positions[room_ind];
+        t3d_vec3_scale(&player_pos_real, player_pos, MODEL_SCALE);
+        t3d_vec3_diff(&dist_vec, &hitbox_pos, &player_pos_real);
+        distf = t3d_vec3_len(&dist_vec);
+
+        debugf("distf=%f\n", distf);
+
+        return (distf < 128.f);
+}
+
+void room_update(const T3DVec3 *player_pos, const float ft)
 {
         room_ind_prev = room_ind;
 
-        if (INPUT_PRESS_PTR(inp_new, inp_old, BTN_A)) {
+        if (is_touching_hitbox_for_next_room(player_pos)) {
                 if (++room_ind >= ROOM_CNT)
                         room_ind = 0;
         }
@@ -83,8 +97,6 @@ static T3DVec3 room_get_absolute_door_pos(const uint16_t ind)
 
         for (i = 1; i <= ind; ++i)
                 t3d_vec3_add(&total, &total, stored_door_positions + i - 1);
-
-        debugf_t3d_vec3("total", &total);
 
         return total;
 }

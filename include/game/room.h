@@ -13,8 +13,7 @@ struct room {
 };
 
 void room_init_from_index(const uint16_t ind);
-void room_update(const struct inputs *inp_old,
-                 const struct inputs *inp_new, const float ft);
+void room_update(const T3DVec3 *player_pos, const float ft);
 void room_setup_matrices(const float st);
 void room_render(void);
 void room_terminate(void);
