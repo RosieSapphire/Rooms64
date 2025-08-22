@@ -1,3 +1,5 @@
+#include "engine/aabb.h"
+
 #include "game/room.h"
 
 #include "t3d_ext.h"
@@ -23,6 +25,7 @@ static T3DVec3 stored_door_positions[ROOM_CNT];
 static uint16_t room_ind_prev = 0;
 static uint16_t room_ind;
 static struct room room_cur;
+static struct aabb room_cur_door_bb;
 
 void room_init_from_index(const uint16_t ind)
 {
@@ -47,6 +50,16 @@ void room_init_from_index(const uint16_t ind)
                                stored_door_positions + ind, MODEL_SCALE);
         }
 
+        /* Make bounding box for door. */
+        {
+                T3DVec3 bb_min, bb_max;
+
+                bb_min = t3d_vec3_make(-32.f, 0.f, -32.f);
+                bb_max = t3d_vec3_make(32.f, 64.f, 32.f);
+                room_cur_door_bb = aabb_make(stored_door_positions + ind,
+                                             &bb_min, &bb_max);
+        }
+
         room_cur.obj_cnt = 0;
         room_cur.objs = NULL;
 
@@ -57,26 +70,14 @@ void room_init_from_index(const uint16_t ind)
         room_cur.objs = malloc(sizeof(*room_cur.objs) * room_cur.obj_cnt);
 }
 
-static bool is_touching_hitbox_for_next_room(const T3DVec3 *player_pos)
-{
-        T3DVec3 hitbox_pos, player_pos_real, dist_vec;
-        float distf;
-
-        hitbox_pos = stored_door_positions[room_ind];
-        t3d_vec3_scale(&player_pos_real, player_pos, MODEL_SCALE);
-        t3d_vec3_diff(&dist_vec, &hitbox_pos, &player_pos_real);
-        distf = t3d_vec3_len(&dist_vec);
-
-        debugf("distf=%f\n", distf);
-
-        return (distf < 128.f);
-}
-
 void room_update(const T3DVec3 *player_pos, const float ft)
 {
+        T3DVec3 player_pos_real;
+
         room_ind_prev = room_ind;
 
-        if (is_touching_hitbox_for_next_room(player_pos)) {
+        t3d_vec3_scale(&player_pos_real, player_pos, MODEL_SCALE);
+        if (aabb_does_point_intersect(&room_cur_door_bb, &player_pos_real)) {
                 if (++room_ind >= ROOM_CNT)
                         room_ind = 0;
         }
@@ -122,6 +123,8 @@ void room_render(void)
         rspq_block_run(room_cur.dl);
         for (i = 0; i < room_cur.obj_cnt; ++i)
                 rspq_block_run(room_cur.objs[i].dl);
+
+        aabb_render(&room_cur_door_bb);
 }
 
 void room_terminate(void)
