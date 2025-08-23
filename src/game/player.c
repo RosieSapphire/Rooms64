@@ -7,17 +7,17 @@
 #define PLAYER_TURN_SPEED_FAST 16.f
 #define PLAYER_TURN_LERP_SPEED 8.f
 #define PLAYER_TURN_EPSILON .001f
-#define PLAYER_STOP_SPEED .01f
+#define PLAYER_STOP_SPEED .05f
 #define PLAYER_FRICTION 6.f
 
-#define PLAYER_MAX_SPEED 0.82f
+#define PLAYER_ACCEL 1.06f
 #define PLAYER_NOCLIP_SPEED_SLOW 4.2f
 #define PLAYER_NOCLIP_SPEED_FAST 12.2f
-#define PLAYER_HEADBOB_SCALE 0.03f
-#define PLAYER_HEADBOB_FACTOR 48.f
+#define PLAYER_HEADBOB_SCALE 0.031f
+#define PLAYER_HEADBOB_FACTOR 32.f
 
-struct player player_init(const T3DVec3 *spawn_pos, const float spawn_yaw,
-                          const float spawn_pitch, const uint8_t mode)
+struct player player_spawn(const T3DVec3 *spawn_pos, const float spawn_yaw,
+                           const float spawn_pitch, const uint8_t mode)
 {
         struct player p;
 
@@ -152,7 +152,7 @@ static void player_update_moving_normal(struct player *p,
 
         t3d_vec3_add(&move_vec, &forw_move, &right_move);
         t3d_vec3_normalize(&move_vec);
-        t3d_vec3_scale(&move_vec, &move_vec, PLAYER_MAX_SPEED * ft);
+        t3d_vec3_scale(&move_vec, &move_vec, PLAYER_ACCEL * ft);
 
         t3d_vec3_add(&p->velocity, &p->velocity, &move_vec);
 
