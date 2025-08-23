@@ -284,6 +284,7 @@ void aabb_render(const struct aabb *bb, const uint32_t color)
         rdpq_sync_pipe();
         rdpq_sprite_upload(TILE0, aabb_spr, NULL);
         rdpq_mode_combiner(RDPQ_COMBINER_TEX_SHADE);
+        rdpq_mode_filter(FILTER_POINT);
         rdpq_mode_alphacompare(1);
         t3d_state_set_drawflags(T3D_FLAG_SHADED | T3D_FLAG_DEPTH |
                                 T3D_FLAG_CULL_BACK | T3D_FLAG_TEXTURED);

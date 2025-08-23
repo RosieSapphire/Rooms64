@@ -8,26 +8,20 @@
 		{
 			"extras":{
 				"fast64":{
+					"settings":{
+						"internal_game_update_ver":1
+					},
 					"sm64":{
-						"exportType":0,
-						"version":3,
 						"address_converter":{
 							"version":1
 						},
-						"combined_export":{}
-					},
-					"settings":{
-						"internal_game_update_ver":1,
-						"dont_ask_color_management":1
+						"combined_export":{},
+						"version":3
 					},
 					"renderSettings":{}
 				},
-				"opLargeTextureProperty":{
-					"mat":{}
-				},
-				"f3d_type":6,
-				"f3d_simple":0,
 				"f3d_lib_dir":"/home/rosie/.config/blender/4.0/scripts/addons/fast64/fast64_internal/f3d/f3d_material_library.blend/NodeTree",
+				"f3d_simple":0,
 				"ootPreviewSettingsProperty":{
 					"ootCSPreviewCSObj":{}
 				}
@@ -35,7 +29,17 @@
 			"name":"Scene",
 			"nodes":[
 				0,
-				1
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11
 			]
 		}
 	],
@@ -44,19 +48,214 @@
 			"extras":{
 				"fast64":{
 					"sm64":{
-						"geo_asm":{
-							"func":"",
-							"param":"0"
-						},
-						"game_object":{
-							"bparams":"0x00000000"
-						},
+						"geo_asm":{},
+						"game_object":{},
 						"version":3
 					}
 				}
 			},
 			"mesh":0,
-			"name":"Room"
+			"name":"Cube"
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.000",
+			"translation":[
+				4.607032775878906,
+				-13.166537284851074,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.001",
+			"translation":[
+				4.607032775878906,
+				-10.219381332397461,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.002",
+			"translation":[
+				4.607032299041748,
+				-7.5,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.003",
+			"translation":[
+				4.607032775878906,
+				-4.453474998474121,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.004",
+			"translation":[
+				4.607032775878906,
+				-1.5063190460205078,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.005",
+			"rotation":[
+				0,
+				0,
+				-1,
+				2.821299744937278e-07
+			],
+			"translation":[
+				-4.607030868530273,
+				-13.166537284851074,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.006",
+			"rotation":[
+				0,
+				0,
+				-1,
+				2.821299744937278e-07
+			],
+			"translation":[
+				-4.607030868530273,
+				-10.219381332397461,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.007",
+			"rotation":[
+				0,
+				0,
+				-1,
+				2.821299744937278e-07
+			],
+			"translation":[
+				-4.607031345367432,
+				-7.5,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.008",
+			"rotation":[
+				0,
+				0,
+				-1,
+				2.821299744937278e-07
+			],
+			"translation":[
+				-4.607030868530273,
+				-4.453474998474121,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.009",
+			"rotation":[
+				0,
+				0,
+				-1,
+				2.821299744937278e-07
+			],
+			"translation":[
+				-4.607030868530273,
+				-1.5063190460205078,
+				0
+			]
 		},
 		{
 			"extras":{
@@ -70,8 +269,8 @@
 			},
 			"name":"DoorPos",
 			"translation":[
-				0,
-				-8.56938648223877,
+				0.003261089324951172,
+				-15,
 				0
 			]
 		}
@@ -116,27 +315,25 @@
 					"tex0":{
 						"tex_set":1,
 						"tex":{
-							"name":"square.i4.png",
+							"name":"wall.ci4.png",
 							"type":"Image"
 						},
 						"tile_scroll":{},
 						"menu":1,
 						"S":{
-							"mirror":1,
-							"mask":4,
+							"mask":6,
 							"shift":0,
 							"low":0.0,
-							"high":15.0
+							"high":63.0,
+							"clamp":0
 						},
 						"T":{
-							"mirror":1,
-							"mask":4,
+							"mask":6,
 							"shift":0,
 							"low":0.0,
-							"high":15.0
+							"high":63.0
 						},
-						"tex_format":0,
-						"autoprop":1
+						"tex_format":5
 					},
 					"tex1":{
 						"tex_set":1,
@@ -236,7 +433,7 @@
 						"g_attroffset_st_enable":0,
 						"g_cull_front":0,
 						"g_cull_back":1,
-						"g_packed_normals":1,
+						"g_packed_normals":0,
 						"g_lighttoalpha":0,
 						"g_lighting_specular":0,
 						"g_fresnel_color":0,
@@ -252,8 +449,8 @@
 						"g_mdsft_rgb_dither":0,
 						"g_mdsft_combkey":0,
 						"g_mdsft_textconv":2,
-						"g_mdsft_text_filt":0,
-						"g_mdsft_textlut":0,
+						"g_mdsft_text_filt":2,
+						"g_mdsft_textlut":1,
 						"g_mdsft_textlod":0,
 						"g_mdsft_textdetail":0,
 						"g_mdsft_textpersp":1,
@@ -298,34 +495,275 @@
 					"tex_scale":[
 						1.0,
 						1.0
-					],
-					"scale_autoprop":1,
-					"set_ambient_from_light":1
+					]
 				},
 				"ootMaterial":{},
 				"objex_bonus":{},
 				"is_f3d":1,
 				"mat_ver":6,
 				"f3d_update_flag":0,
-				"menu_tab":3
+				"menu_tab":1
 			},
-			"name":"material",
+			"name":"walls",
+			"pbrMetallicRoughness":{}
+		},
+		{
+			"extras":{
+				"rdp_settings":{},
+				"combiner1":{},
+				"UVanim":{
+					"x":{},
+					"y":{}
+				},
+				"tex0":{
+					"tile_scroll":{}
+				},
+				"ootCollisionProperty":{},
+				"f3d_mat":{
+					"name":"",
+					"combiner1":{
+						"name":"",
+						"A":1,
+						"B":8,
+						"C":4,
+						"D":7,
+						"A_alpha":7,
+						"B_alpha":7,
+						"C_alpha":7,
+						"D_alpha":6
+					},
+					"combiner2":{
+						"name":"",
+						"A":8,
+						"B":8,
+						"C":16,
+						"D":4,
+						"A_alpha":7,
+						"B_alpha":7,
+						"C_alpha":7,
+						"D_alpha":5
+					},
+					"tex0":{
+						"tex_set":1,
+						"tex":{
+							"name":"carpet.ci4.png",
+							"type":"Image"
+						},
+						"tile_scroll":{},
+						"menu":1,
+						"S":{
+							"mask":6,
+							"shift":0,
+							"low":0.0,
+							"high":63.0,
+							"clamp":0
+						},
+						"T":{
+							"mask":6,
+							"shift":0,
+							"low":0.0,
+							"high":63.0
+						},
+						"tex_format":5
+					},
+					"tex1":{
+						"tex_set":1,
+						"tex":{}
+					},
+					"set_prim":1,
+					"set_lights":1,
+					"set_env":0,
+					"set_blend":0,
+					"set_key":1,
+					"set_k0_5":1,
+					"set_combiner":1,
+					"use_default_lighting":1,
+					"blend_color":[
+						0.0,
+						0.0,
+						0.0,
+						1.0
+					],
+					"prim_color":[
+						1.0,
+						1.0,
+						1.0,
+						1.0
+					],
+					"env_color":[
+						1.0,
+						1.0,
+						1.0,
+						1.0
+					],
+					"key_center":[
+						1.0,
+						1.0,
+						1.0,
+						1.0
+					],
+					"key_scale":[
+						0.0,
+						0.0,
+						0.0
+					],
+					"key_width":[
+						0.0,
+						0.0,
+						0.0
+					],
+					"k0":0.686274528503418,
+					"k1":-0.16862745583057404,
+					"k2":-0.3490196168422699,
+					"k3":0.8705882430076599,
+					"k4":0.4470588266849518,
+					"k5":0.16470588743686676,
+					"prim_lod_frac":0.0,
+					"prim_lod_min":0.0,
+					"default_light_color":[
+						1.0,
+						1.0,
+						1.0,
+						1.0
+					],
+					"ambient_light_color":[
+						0.2140410989522934,
+						0.2140410989522934,
+						0.2140410989522934,
+						1.0
+					],
+					"f3d_light1":null,
+					"f3d_light2":null,
+					"f3d_light3":null,
+					"f3d_light4":null,
+					"f3d_light5":null,
+					"f3d_light6":null,
+					"f3d_light7":null,
+					"set_ao":0,
+					"set_fresnel":0,
+					"set_attroffs_st":0,
+					"set_attroffs_z":0,
+					"fog_color":[
+						0.0,
+						0.0,
+						0.0,
+						1.0
+					],
+					"fog_position":[
+						985,
+						1000
+					],
+					"set_fog":0,
+					"use_global_fog":1,
+					"rdp_settings":{
+						"name":"",
+						"g_zbuffer":1,
+						"g_shade":1,
+						"g_ambocclusion":0,
+						"g_attroffset_z_enable":0,
+						"g_attroffset_st_enable":0,
+						"g_cull_front":0,
+						"g_cull_back":1,
+						"g_packed_normals":0,
+						"g_lighttoalpha":0,
+						"g_lighting_specular":0,
+						"g_fresnel_color":0,
+						"g_fresnel_alpha":0,
+						"g_fog":0,
+						"g_lighting":1,
+						"g_tex_gen":0,
+						"g_tex_gen_linear":0,
+						"g_lod":0,
+						"g_shade_smooth":1,
+						"g_clipping":0,
+						"g_mdsft_alpha_dither":2,
+						"g_mdsft_rgb_dither":0,
+						"g_mdsft_combkey":0,
+						"g_mdsft_textconv":2,
+						"g_mdsft_text_filt":2,
+						"g_mdsft_textlut":1,
+						"g_mdsft_textlod":0,
+						"g_mdsft_textdetail":0,
+						"g_mdsft_textpersp":1,
+						"g_mdsft_cycletype":0,
+						"g_mdsft_color_dither":1,
+						"g_mdsft_pipeline":0,
+						"g_mdsft_alpha_compare":0,
+						"g_mdsft_zsrcsel":0,
+						"clip_ratio":1,
+						"set_rendermode":0,
+						"rendermode_advanced_enabled":0,
+						"rendermode_preset_cycle_1":1,
+						"rendermode_preset_cycle_2":1,
+						"aa_en":1,
+						"z_cmp":1,
+						"z_upd":1,
+						"im_rd":1,
+						"clr_on_cvg":0,
+						"cvg_dst":0,
+						"zmode":0,
+						"cvg_x_alpha":0,
+						"alpha_cvg_sel":1,
+						"force_bl":0,
+						"blend_p1":0,
+						"blend_p2":0,
+						"blend_a1":0,
+						"blend_a2":0,
+						"blend_m1":1,
+						"blend_m2":1,
+						"blend_b1":1,
+						"blend_b2":1
+					},
+					"draw_layer":{
+						"sm64":1,
+						"oot":0
+					},
+					"presetName":"Custom",
+					"UVanim0":{
+						"x":{},
+						"y":{}
+					},
+					"tex_scale":[
+						1.0,
+						1.0
+					]
+				},
+				"ootMaterial":{},
+				"objex_bonus":{},
+				"is_f3d":1,
+				"mat_ver":6,
+				"f3d_update_flag":0,
+				"menu_tab":1
+			},
+			"name":"carpet",
 			"pbrMetallicRoughness":{}
 		}
 	],
 	"meshes":[
 		{
-			"name":"Room",
+			"name":"Mesh",
 			"primitives":[
 				{
 					"attributes":{
 						"COLOR_0":0,
 						"POSITION":1,
 						"NORMAL":2,
-						"TEXCOORD_0":3
+						"TEXCOORD_0":3,
+						"TANGENT":4
 					},
-					"indices":4,
+					"indices":5,
 					"material":0
+				},
+				{
+					"attributes":{
+						"COLOR_0":6,
+						"POSITION":7,
+						"NORMAL":8,
+						"TEXCOORD_0":9,
+						"TANGENT":10
+					},
+					"indices":11,
+					"material":1
 				}
 			]
 		}
@@ -334,21 +772,21 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":48,
+			"count":64,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":48,
+			"count":64,
 			"max":[
-				4,
+				4.607032775878906,
 				0,
-				4
+				5.738498210906982
 			],
 			"min":[
-				-4,
-				-8.56938648223877,
+				-4.607032775878906,
+				-15.000001907348633,
 				0
 			],
 			"type":"VEC3"
@@ -356,57 +794,151 @@
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":48,
+			"count":64,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":3,
 			"componentType":5126,
-			"count":48,
+			"count":64,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":4,
+			"componentType":5126,
+			"count":64,
+			"type":"VEC4"
+		},
+		{
+			"bufferView":5,
 			"componentType":5123,
-			"count":90,
+			"count":168,
+			"type":"SCALAR"
+		},
+		{
+			"bufferView":6,
+			"componentType":5126,
+			"count":30,
+			"type":"VEC4"
+		},
+		{
+			"bufferView":7,
+			"componentType":5126,
+			"count":30,
+			"max":[
+				4.607032775878906,
+				0,
+				0
+			],
+			"min":[
+				-4.607032775878906,
+				-15.000001907348633,
+				0
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":8,
+			"componentType":5126,
+			"count":30,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":9,
+			"componentType":5126,
+			"count":30,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":10,
+			"componentType":5126,
+			"count":30,
+			"type":"VEC4"
+		},
+		{
+			"bufferView":11,
+			"componentType":5123,
+			"count":96,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":768,
+			"byteLength":1024,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":576,
-			"byteOffset":768,
+			"byteLength":768,
+			"byteOffset":1024,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":576,
-			"byteOffset":1344,
+			"byteLength":768,
+			"byteOffset":1792,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":384,
-			"byteOffset":1920,
+			"byteLength":512,
+			"byteOffset":2560,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":180,
-			"byteOffset":2304,
+			"byteLength":1024,
+			"byteOffset":3072,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":336,
+			"byteOffset":4096,
+			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":480,
+			"byteOffset":4432,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":360,
+			"byteOffset":4912,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":360,
+			"byteOffset":5272,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":240,
+			"byteOffset":5632,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":480,
+			"byteOffset":5872,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":192,
+			"byteOffset":6352,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":2484,
+			"byteLength":6544,
 			"uri":"room00.bin"
 		}
 	]

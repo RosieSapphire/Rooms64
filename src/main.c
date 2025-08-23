@@ -6,8 +6,8 @@
 #include "inputs.h"
 
 #include "engine/object.h"
-#include "engine/player.h"
 
+#include "game/player.h"
 #include "game/room.h"
 
 #define USE_INTERPOLATION 1
@@ -23,8 +23,11 @@ int main(void)
         int dfs_handle;
         float time_accumulated;
 
+        /*
         T3DVec3 light_direction;
-        uint8_t light_col_direction[4], light_col_ambi[4];
+        uint8_t light_col_direction[4];
+        */
+        uint8_t light_col_ambi[4];
 
         struct player player;
 
@@ -58,21 +61,23 @@ int main(void)
                 T3DVec3 pos;
                 float yaw, pitch;
 
-                pos = t3d_vec3_make(0.f, -3.4f, 0.f);
+                pos = t3d_vec3_make(0.f, -1.f, 0.f);
                 yaw = -(M_PI * .5f);
                 pitch = 0.f;
-                player = player_init(&pos, yaw, pitch, PLAYER_MODE_STANDARD);
+                player = player_spawn(&pos, yaw, pitch, PLAYER_MODE_STANDARD);
         }
 
+        /*
         light_direction = t3d_vec3_make(-1.f, 1.f, 0.f);
         t3d_vec3_norm(&light_direction);
         light_col_direction[0] = 0xFF;
         light_col_direction[1] = 0xFF;
         light_col_direction[2] = 0xFF;
         light_col_direction[3] = 0xFF;
-        light_col_ambi[0] = 0x20;
-        light_col_ambi[1] = 0x20;
-        light_col_ambi[2] = 0x20;
+        */
+        light_col_ambi[0] = 0xFF;
+        light_col_ambi[1] = 0xFF;
+        light_col_ambi[2] = 0xFF;
         light_col_ambi[3] = 0xFF;
 
         /* Main loop. */
@@ -114,18 +119,23 @@ int main(void)
                 rdpq_mode_antialias(AA_NONE);
 
                 t3d_viewport_attach(&viewport);
+                /*
                 {
                         uint32_t ambi32;
 
                         ambi32 = U8ARR_TO_U32PACK(light_col_ambi);
                         t3d_screen_clear_color(color_from_packed32(ambi32));
                 }
+                */
                 t3d_screen_clear_depth();
 
                 t3d_light_set_ambient(light_col_ambi);
+                /*
                 t3d_light_set_directional(0, light_col_direction,
                                           &light_direction);
                 t3d_light_set_count(1);
+                */
+                t3d_light_set_count(0);
 
                 rooms_render(subtick);
 
