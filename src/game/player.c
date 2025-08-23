@@ -1,4 +1,4 @@
-#include "engine/player.h"
+#include "game/player.h"
 
 #include "util.h"
 #include "perlin.h"
