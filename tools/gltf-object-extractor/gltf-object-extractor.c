@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 #define CGLTF_IMPLEMENTATION
 #include "cgltf.h"
@@ -7,6 +8,7 @@ enum {
         RET_OKAY,
         RET_INVALID_ARGC,
         RET_CGLTF_FAILED,
+        RET_DOORPOS_NOT_FOUND,
         RET_TYPE_CNT
 };
 
@@ -47,6 +49,7 @@ int main(int argc, char **argv)
         cgltf_data *data = NULL;
         cgltf_result result = 0;
         struct room_file room_out;
+        bool has_found_doorpos;
 
         if (argc != 3) {
                 printf("ERROR: Must have input & output path as arguments.\n");
@@ -62,6 +65,7 @@ int main(int argc, char **argv)
                 return RET_CGLTF_FAILED;
         }
 
+        has_found_doorpos = false;
         for (size_t i = 0; i < data->nodes_count; ++i) {
                 cgltf_node *n;
 
@@ -72,6 +76,13 @@ int main(int argc, char **argv)
                 memcpy(room_out.door_pos, n->translation, 3 * sizeof(float));
                 printf("DoorPos: %f, %f, %f\n", room_out.door_pos[0],
                        room_out.door_pos[1], room_out.door_pos[2]);
+                has_found_doorpos = true;
+        }
+
+        if (!has_found_doorpos) {
+                printf("ERROR: Couldn't find doorpos in room from '%s'.\n",
+                       gltf_path);
+                return RET_DOORPOS_NOT_FOUND;
         }
 
         room_out.obj_cnt = 0;
