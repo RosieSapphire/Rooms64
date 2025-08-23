@@ -18,12 +18,17 @@ struct player {
         T3DVec3 position_b;
         T3DVec3 up;
         T3DVec3 velocity;
+        T3DVec3 headbob_vec_a;
+        T3DVec3 headbob_vec_b;
+        float headbob_timer_a;
+        float headbob_timer_b;
         float yaw_tar;
         float yaw_a;
         float yaw_b;
         float pitch_tar;
         float pitch_a;
         float pitch_b;
+        bool has_played_footstep;
         uint8_t mode;
 };
 

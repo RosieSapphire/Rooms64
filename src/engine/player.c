@@ -13,6 +13,8 @@
 #define PLAYER_MAX_SPEED 0.82f
 #define PLAYER_NOCLIP_SPEED_SLOW 4.2f
 #define PLAYER_NOCLIP_SPEED_FAST 12.2f
+#define PLAYER_HEADBOB_SCALE 0.03f
+#define PLAYER_HEADBOB_FACTOR 48.f
 
 struct player player_init(const T3DVec3 *spawn_pos, const float spawn_yaw,
                           const float spawn_pitch, const uint8_t mode)
@@ -23,12 +25,17 @@ struct player player_init(const T3DVec3 *spawn_pos, const float spawn_yaw,
         p.position_b = p.position_a;
         p.up = t3d_vec3_zup();
         p.velocity = t3d_vec3_zero();
+        p.headbob_vec_a = t3d_vec3_zero();
+        p.headbob_vec_b = t3d_vec3_zero();
+        p.headbob_timer_a = 0.f;
+        p.headbob_timer_b = 0.f;
         p.yaw_tar = spawn_yaw;
         p.yaw_a = p.yaw_tar;
         p.yaw_b = p.yaw_tar;
         p.pitch_tar = spawn_pitch;
         p.pitch_a = p.pitch_tar;
         p.pitch_b = p.pitch_tar;
+        p.has_played_footstep = false;
         p.mode = mode;
 
         return p;
@@ -193,26 +200,45 @@ static void player_update_moving_noclip(struct player *p,
 }
 #endif
 
-#if 0
-static void player_update_head_wiggle(struct player *p)
+static void player_update_headbob(struct player *p, const float ft)
 {
-        float wigglex0, wiggley0, wigglex1, wiggley1, tscale;
+        T3DVec3 side, up;
+        float speed, sin_bob, sin2_bob;
 
-        p->up_visual_a = p->up_visual_b;
-        p->yaw_offset_a = p->yaw_offset_b;
-        p->pitch_offset_a = p->pitch_offset_b;
-        tscale = p->head_wiggle_amount;
-        wigglex0 = perlinf(p->state_timer, 0.f) * tscale;
-        wiggley0 = perlinf(0.f, p->state_timer) * tscale;
-        wigglex1 = perlinf(p->state_timer + 1024.f, 0.f) * tscale;
-        wiggley1 = perlinf(0.f, p->state_timer + 1024.f) * tscale;
+        speed = t3d_vec3_len(&p->velocity) * PLAYER_HEADBOB_FACTOR;
+        p->headbob_timer_a = p->headbob_timer_b;
+        p->headbob_timer_b += speed * ft;
+        sin_bob = sinf(p->headbob_timer_b);
+        sin2_bob = sinf(p->headbob_timer_b * 2);
 
-        p->up_visual_b = t3d_vec3_make(wigglex0, wiggley0, 1.f);
-        t3d_vec3_normalize(&p->up_visual_b);
-        p->yaw_offset_b = wigglex1;
-        p->pitch_offset_b = wiggley1;
-}
+        /* TODO: Play footstep sound. */
+#if 0
+        mixer_ch_set_vol(SFXC_FOOTSTEP, speed * 2, speed * 2);
+
+        if(fabsf(sin_bob) >= 0.8f) {
+                if(!played_footstep) {
+                        wav64_play(&footstep_sfx, 1);
+                        played_footstep = true;
+                }
+        } else {
+                played_footstep = false;
+        }
 #endif
+
+        {
+                T3DVec3 forw;
+
+                forw = player_get_forward_dir(p, 1.f);
+                side = player_get_right_dir(p, &forw);
+        }
+        t3d_vec3_scale(&side, &side, sin_bob * speed * PLAYER_HEADBOB_SCALE);
+
+        up = p->up;
+        t3d_vec3_scale(&up, &up, sin2_bob * speed * PLAYER_HEADBOB_SCALE * .5f);
+
+        p->headbob_vec_a = p->headbob_vec_b;
+        t3d_vec3_add(&p->headbob_vec_b, &side, &up);
+}
 
 void player_update(struct player *p, const struct inputs *inp_new,
                    const struct inputs *inp_old, const float ft)
@@ -227,6 +253,7 @@ void player_update(struct player *p, const struct inputs *inp_new,
                 player_update_turning_normal(p, inp_new, ft);
                 player_update_friction(p, ft);
                 player_update_moving_normal(p, inp_new, ft);
+                player_update_headbob(p, ft);
 #ifdef PLAYER_NOCLIP
                 return;
 
@@ -270,10 +297,12 @@ T3DVec3 player_get_right_dir(const struct player *p, const T3DVec3 *forw_dir)
 void player_to_view_matrix(const struct player *p, T3DViewport *vp,
                            const float subtick)
 {
-        T3DVec3 head_offset, eye, forw_dir, focus;
+        T3DVec3 head_offset, bob, eye, forw_dir, focus;
 
         /* Eye. */
         head_offset = t3d_vec3_make(0.f, 0.f, PLAYER_HEIGHT);
+        t3d_vec3_lerp(&bob, &p->headbob_vec_a, &p->headbob_vec_b, subtick);
+        t3d_vec3_add(&head_offset, &head_offset, &bob);
         t3d_vec3_lerp(&eye, &p->position_a, &p->position_b, subtick);
         t3d_vec3_add(&eye, &eye, &head_offset);
         t3d_vec3_scale(&eye, &eye, MODEL_SCALE);

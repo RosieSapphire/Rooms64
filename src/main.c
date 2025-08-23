@@ -52,7 +52,7 @@ int main(void)
         viewport = t3d_viewport_create();
 
         /* Initialize game. */
-        room_load_next(ROOM_TYPE_00);
+        rooms_generate();
 
         {
                 T3DVec3 pos;
@@ -128,13 +128,13 @@ int main(void)
                                           &light_direction);
                 t3d_light_set_count(1);
 
-                room_render();
+                rooms_render();
 
                 rdpq_detach_show();
         }
 
         /* Terminate game. */
-        room_terminate();
+        /* room_terminate(); */
 
         /* Terminate Tiny3D. */
         t3d_destroy();

@@ -15,12 +15,12 @@ struct room {
         T3DMat4FP *mtx;
         rspq_block_t *dl;
         struct object *objs;
+        T3DVec3 door_pos;
         uint16_t obj_cnt;
-        uint8_t type;
 };
 
-void room_load_next(const uint8_t type);
+void rooms_generate(void);
 void room_update(const T3DVec3 *player_pos);
 void room_setup_matrices(const float st);
-void room_render(void);
-void room_terminate(void);
+void rooms_render(void);
+void room_terminate(struct room *r);
