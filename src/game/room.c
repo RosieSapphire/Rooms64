@@ -75,6 +75,17 @@ static struct room room_load(const uint8_t type)
         return r;
 }
 
+static struct aabb door_hitbox_create(const struct room *r)
+{
+        struct aabb bb;
+
+        bb.pos_offset = get_absolute_door_pos(r, true);
+        bb.min = t3d_vec3_make(-196.f, -196.f, 0.f);
+        bb.max = t3d_vec3_make(196.f, 196.f, 324.f);
+
+        return bb;
+}
+
 void rooms_generate(void)
 {
         struct room room_refs[ROOM_TYPE_CNT];
@@ -89,14 +100,7 @@ void rooms_generate(void)
         for(int i = 1; i < ROOM_CNT; i++)
                 rooms[i] = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
 
-        {
-                T3DVec3 bb_min, bb_max, abs_door_pos;
-
-                bb_min = t3d_vec3_make(-128.f, -16.f, 0.f);
-                bb_max = t3d_vec3_make(128.f, 16.f, 256.f);
-                abs_door_pos = get_absolute_door_pos(room_cur, true);
-                next_door_hitbox = aabb_make(&abs_door_pos, &bb_min, &bb_max);
-        }
+        next_door_hitbox = door_hitbox_create(room_cur);
 }
 
 void room_update(const T3DVec3 *player_pos)
@@ -107,17 +111,12 @@ void room_update(const T3DVec3 *player_pos)
 
         room_prev = room_cur;
         if (aabb_does_point_intersect(&next_door_hitbox, &player_pos_real)) {
-                T3DVec3 bb_min, bb_max, abs_door_pos;
-
                 if ((++room_cur - rooms) >= ROOM_CNT) {
                         assertf(0, "Game win\n");
                         return;
                 }
 
-                bb_min = t3d_vec3_make(-128.f, -16.f, 0.f);
-                bb_max = t3d_vec3_make(128.f, 16.f, 256.f);
-                abs_door_pos = get_absolute_door_pos(room_cur, true);
-                next_door_hitbox = aabb_make(&abs_door_pos, &bb_min, &bb_max);
+                next_door_hitbox = door_hitbox_create(room_cur);
         }
 }
 
@@ -153,7 +152,7 @@ void rooms_render(const float subtick)
                 pos = get_absolute_door_pos(r, false);
                 if (r == room_cur) {
                         debugf("%d ", r - rooms);
-                        debugf_t3d_vec3("Door Pos", &r->door_pos);
+                        debugf_t3d_vec3("Door Pos", &pos);
                 }
 
                 rspq_wait();
