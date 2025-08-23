@@ -95,7 +95,7 @@ int main(void)
                         room_update(&player.position_b);
                 }
 
-                /* Updating -> Rendering */
+                /* Rendering Setup */
 #if (USE_INTERPOLATION == 1)
                 subtick = time_accumulated / fixed_time;
 #else
@@ -106,9 +106,8 @@ int main(void)
                                             T3D_DEG_TO_RAD(VIEWPORT_FOV_DEG),
                                             VIEWPORT_NEAR, VIEWPORT_FAR);
                 player_to_view_matrix(&player, &viewport, subtick);
-                room_setup_matrices(subtick);
 
-                /* Rendering */
+                /* Actual Rendering */
                 rdpq_attach(display_get(), display_get_zbuf());
                 t3d_frame_start();
                 rdpq_mode_dithering(DITHER_NOISE_NONE);
@@ -128,7 +127,7 @@ int main(void)
                                           &light_direction);
                 t3d_light_set_count(1);
 
-                rooms_render();
+                rooms_render(subtick);
 
                 rdpq_detach_show();
         }

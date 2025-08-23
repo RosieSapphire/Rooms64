@@ -21,6 +21,5 @@ struct room {
 
 void rooms_generate(void);
 void room_update(const T3DVec3 *player_pos);
-void room_setup_matrices(const float st);
-void rooms_render(void);
+void rooms_render(const float subtick);
 void room_terminate(struct room *r);
