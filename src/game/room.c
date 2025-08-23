@@ -8,11 +8,13 @@
 
 static const char *room_mdl_paths[ROOM_CNT] = {
         "rom:/room00.t3dm",
-        "rom:/room01.t3dm"
+        "rom:/room01.t3dm",
+        "rom:/room02.t3dm"
 };
 
 static const char *room_dat_paths[ROOM_CNT] = {
         "rom:/room00.room",
+        "rom:/room02.room",
         "rom:/room01.room"
 };
 
@@ -80,6 +82,7 @@ void rooms_generate(void)
 
         /* First room is always the same. */
         rooms[0] = room_refs[0];
+
         for(int i = 1; i < ROOM_CNT; i++)
                 rooms[i] = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
 
@@ -141,16 +144,15 @@ void rooms_render(const float subtick)
         start = room_cur - 2;
         if (start < rooms)
                 start = rooms;
-        debugf("Rendering ");
         for (r = start; r <= room_cur; ++r) {
                 T3DVec3 pos;
 
                 pos = get_absolute_door_pos(r, false);
-                debugf("%d ", r - rooms);
+                if (r == room_cur)
+                        debugf_t3d_vec3("Pos", &pos);
                 room_render(r, &pos, subtick);
                 rspq_wait();
         }
-        debugf("\n");
 
         aabb_render(&next_door_hitbox, 0x183048FF);
 }
