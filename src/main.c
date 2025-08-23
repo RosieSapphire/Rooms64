@@ -15,7 +15,7 @@
 
 #define VIEWPORT_NEAR (.5f * MODEL_SCALE)
 #define VIEWPORT_FAR (10.f * MODEL_SCALE)
-#define VIEWPORT_FOV_DEG 90.f
+#define VIEWPORT_FOV_DEG 75.f
 
 int main(void)
 {
