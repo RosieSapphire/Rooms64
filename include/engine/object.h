@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ENGINE_OBJECT_H
+#define ENGINE_OBJECT_H
 
 #include <libdragon.h>
 #include <t3d/t3d.h>
@@ -22,3 +23,5 @@ struct object object_create(const char *mdl_path, const T3DVec3 *pos,
                             void (*update_func)(struct object *, const float));
 void object_render(const struct object *obj, const float st);
 void object_destroy(struct object *obj);
+
+#endif /* ENGINE_OBJECT_H */

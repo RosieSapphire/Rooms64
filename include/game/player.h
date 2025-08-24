@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_PLAYER_H
+#define GAME_PLAYER_H
 
 #include <t3d/t3d.h>
 
@@ -40,3 +41,5 @@ void player_update(struct player *p, const struct inputs *inp_new,
                    const struct inputs *inp_old, const float ft);
 void player_to_view_matrix(const struct player *p, T3DViewport *vp,
                            const float subtick);
+
+#endif /* GAME_PLAYER_H */

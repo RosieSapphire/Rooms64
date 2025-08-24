@@ -1,4 +1,5 @@
-#pragma once
+#ifndef T3D_EXT_H
+#define T3D_EXT_H
 
 #include <t3d/t3d.h>
 
@@ -26,3 +27,5 @@ T3DVec3 t3d_vec3_one(void);
 float t3d_vec3_dot(const T3DVec3 *a, const T3DVec3 *b);
 T3DVec3 t3d_vec3_normalize(const T3DVec3 *v);
 void debugf_t3d_vec3(const char *name, const T3DVec3 *vec);
+
+#endif /* T3D_EXT_H */

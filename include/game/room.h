@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_ROOM_H
+#define GAME_ROOM_H
 
 #include "inputs.h"
 
@@ -26,3 +27,5 @@ void rooms_generate(void);
 void room_update(struct player *p);
 void rooms_render(const float subtick);
 void room_terminate(struct room *r);
+
+#endif /* GAME_ROOM_H */

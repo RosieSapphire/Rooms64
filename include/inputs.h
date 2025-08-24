@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INPUTS_H
+#define INPUTS_H
 
 #include "t3d_ext.h"
 
@@ -34,3 +35,5 @@ struct inputs {
 struct inputs inputs_get_from_libdragon(void);
 struct inputs inputs_get_diff(const struct inputs *inp_old,
                               const struct inputs *inp_new);
+
+#endif /* INPUTS_H */

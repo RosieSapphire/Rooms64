@@ -1,4 +1,5 @@
-#pragma once
+#ifndef UTIL_H
+#define UTIL_H
 
 #define JOYSTICK_MAG_MAX 60
 #define JOYSTICK_MAG_MIN 6
@@ -16,3 +17,5 @@
 float lerpf(const float a, const float b, const float t);
 float clampf(const float x, const float min, const float max);
 void radian_wrap_2pi_dual(float *rad_a_ptr, float *rad_b_ptr);
+
+#endif /* UTIL_H */
