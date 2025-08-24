@@ -258,7 +258,15 @@ void player_update(struct player *p, const struct inputs *inp_new,
                    const struct inputs *inp_old, const float ft)
 {
 #ifdef PLAYER_NOCLIP
-        p->mode ^= INPUT_PRESS_PTR(inp_new, inp_old, BTN_START);
+        if (INPUT_PRESS_PTR(inp_new, inp_old, BTN_START)) {
+                p->mode ^= 1;
+
+                /* Reset player's position to the ground when exiting noclip. */
+                if (p->mode == PLAYER_MODE_STANDARD) {
+                        p->position_a.v[2] = 0.f;
+                        p->position_b.v[2] = 0.f;
+                }
+        }
 
         switch (p->mode) {
         case PLAYER_MODE_STANDARD:
