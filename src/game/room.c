@@ -146,18 +146,10 @@ void rooms_render(const float subtick)
 {
         const struct room *start, *r;
 
-        /* Render 3 rooms at a time. The current one and the 2 previous. */
         /*
-        start = room_cur - 1;
-        if (start < rooms)
-                start = rooms;
-        */
-
-        /*
-        for (r = start; r <= room_cur; ++r) {
-                T3DVec3 off;
-
-                */
+         * TODO: Render 3 rooms at a time.
+         * The current one and the 2 previous.
+         */
         T3DVec3 off;
         r = room_cur;
 
@@ -169,11 +161,6 @@ void rooms_render(const float subtick)
                 off = get_prev_room_offset(r - 1);
                 room_render(r - 1, &off, subtick);
         }
-        /*
-        }
-        */
-        debugf("Room %d\n", room_cur - rooms);
-
         aabb_render(&next_door_hitbox, 0x183048FF);
 }
 
