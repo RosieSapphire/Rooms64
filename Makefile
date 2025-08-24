@@ -93,7 +93,7 @@ clean:
 	rm -rf $(ROM) $(BUILD_DIR) filesystem
 
 todo: $(H_FILES) $(C_FILES)
-	grep -i "todo" $^
-	grep -i "fixme" $^
+	grep -i --color=always "todo" $^
+	grep -i --color=always "fixme" $^
 
 -include $(wildcard $(BUILD_DIR)/*.d)
