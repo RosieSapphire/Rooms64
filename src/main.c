@@ -45,13 +45,7 @@ int main(void)
         dfs_handle = dfs_init(DFS_DEFAULT_LOCATION);
 
         /* Initialize Tiny3D. */
-        {
-                T3DInitParams initparams;
-
-                memset(&initparams, 0, sizeof(initparams));
-                t3d_init(initparams);
-        }
-
+        t3d_init((T3DInitParams){});
         viewport = t3d_viewport_create();
 
         /* Initialize game. */

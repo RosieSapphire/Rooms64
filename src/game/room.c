@@ -23,8 +23,7 @@ static struct room *room_prev = rooms;
 static struct room *room_cur = rooms;
 static struct aabb next_door_hitbox;
 
-static T3DVec3 get_absolute_door_pos(const struct room *r,
-                                     const bool is_door)
+static T3DVec3 get_absolute_door_pos(const struct room *r, const bool is_door)
 {
         T3DVec3 total;
         struct room *i;
@@ -75,7 +74,7 @@ static struct room room_load(const uint8_t type)
         return r;
 }
 
-static struct aabb door_hitbox_create(const struct room *r)
+static struct aabb door_hitbox_from_room(const struct room *r)
 {
         struct aabb bb;
 
@@ -100,7 +99,7 @@ void rooms_generate(void)
         for(int i = 1; i < ROOM_CNT; i++)
                 rooms[i] = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
 
-        next_door_hitbox = door_hitbox_create(room_cur);
+        next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
 void room_update(const T3DVec3 *player_pos)
@@ -116,7 +115,7 @@ void room_update(const T3DVec3 *player_pos)
                         return;
                 }
 
-                next_door_hitbox = door_hitbox_create(room_cur);
+                next_door_hitbox = door_hitbox_from_room(room_cur);
         }
 }
 
