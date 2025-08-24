@@ -102,11 +102,11 @@ void rooms_generate(void)
         next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
-void room_update(const T3DVec3 *player_pos)
+void room_update(struct player *p)
 {
         T3DVec3 player_pos_real;
 
-        t3d_vec3_scale(&player_pos_real, player_pos, MODEL_SCALE);
+        t3d_vec3_scale(&player_pos_real, &p->position_b, MODEL_SCALE);
 
         room_prev = room_cur;
         if (aabb_does_point_intersect(&next_door_hitbox, &player_pos_real)) {
@@ -149,11 +149,6 @@ void rooms_render(const float subtick)
                 T3DVec3 pos;
 
                 pos = get_absolute_door_pos(r, false);
-                if (r == room_cur) {
-                        debugf("%d ", r - rooms);
-                        debugf_t3d_vec3("Door Pos", &pos);
-                }
-
                 rspq_wait();
                 room_render(r, &pos, subtick);
         }

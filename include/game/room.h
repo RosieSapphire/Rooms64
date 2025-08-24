@@ -4,6 +4,8 @@
 
 #include "engine/object.h"
 
+#include "game/player.h"
+
 enum {
         ROOM_TYPE_00,
         ROOM_TYPE_01,
@@ -21,6 +23,6 @@ struct room {
 };
 
 void rooms_generate(void);
-void room_update(const T3DVec3 *player_pos);
+void room_update(struct player *p);
 void rooms_render(const float subtick);
 void room_terminate(struct room *r);

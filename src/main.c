@@ -10,9 +10,6 @@
 #include "game/player.h"
 #include "game/room.h"
 
-#define USE_INTERPOLATION 1
-#define TICKRATE 30
-
 #define VIEWPORT_NEAR (.5f * MODEL_SCALE)
 #define VIEWPORT_FAR (10.f * MODEL_SCALE)
 #define VIEWPORT_FOV_DEG 75.f
@@ -22,12 +19,12 @@ int main(void)
         T3DViewport viewport;
         int dfs_handle;
         float time_accumulated;
+        uint8_t light_col_ambi[4];
 
         /*
         T3DVec3 light_direction;
         uint8_t light_col_direction[4];
         */
-        uint8_t light_col_ambi[4];
 
         struct player player;
 
@@ -91,11 +88,11 @@ int main(void)
                         inp_new = inputs_get_from_libdragon();
 
                         player_update(&player, &inp_new, &inp_old, fixed_time);
-                        room_update(&player.position_b);
+                        room_update(&player);
                 }
 
                 /* Rendering Setup */
-#if (USE_INTERPOLATION == 1)
+#ifdef USE_INTERPOLATION
                 subtick = time_accumulated / fixed_time;
 #else
                 subtick = 1.f;

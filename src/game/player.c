@@ -11,6 +11,7 @@
 #define PLAYER_FRICTION 6.f
 
 #define PLAYER_ACCEL 1.06f
+#define PLAYER_VELOCITY_SCALE 30.f
 #define PLAYER_NOCLIP_SPEED_SLOW 4.2f
 #define PLAYER_NOCLIP_SPEED_FAST 12.2f
 #define PLAYER_HEADBOB_SCALE 0.031f
@@ -132,8 +133,13 @@ static void player_update_moving_normal(struct player *p,
         accel_dir.v[1] = inp->btn[BTN_C_UP] - inp->btn[BTN_C_DOWN];
 
         if (!accel_dir.v[0] && !accel_dir.v[1]) {
+                T3DVec3 vel_scaled;
+
                 p->position_a = p->position_b;
-                t3d_vec3_add(&p->position_b, &p->position_b, &p->velocity);
+                vel_scaled = p->velocity;
+                t3d_vec3_scale(&vel_scaled, &p->velocity,
+                               ft * PLAYER_VELOCITY_SCALE);
+                t3d_vec3_add(&p->position_b, &p->position_b, &vel_scaled);
                 return;
         }
 
@@ -157,7 +163,15 @@ static void player_update_moving_normal(struct player *p,
         t3d_vec3_add(&p->velocity, &p->velocity, &move_vec);
 
         p->position_a = p->position_b;
-        t3d_vec3_add(&p->position_b, &p->position_b, &p->velocity);
+        {
+                T3DVec3 vel_scaled;
+
+                p->position_a = p->position_b;
+                vel_scaled = p->velocity;
+                t3d_vec3_scale(&vel_scaled, &p->velocity,
+                               ft * PLAYER_VELOCITY_SCALE);
+                t3d_vec3_add(&p->position_b, &p->position_b, &vel_scaled);
+        }
 }
 
 #ifdef PLAYER_NOCLIP
@@ -243,6 +257,7 @@ static void player_update_headbob(struct player *p, const float ft)
 void player_update(struct player *p, const struct inputs *inp_new,
                    const struct inputs *inp_old, const float ft)
 {
+        debugf("Velocity: %f\n", t3d_vec3_len(&p->velocity));
 
 #ifdef PLAYER_NOCLIP
         p->mode ^= INPUT_PRESS_PTR(inp_new, inp_old, BTN_START);
