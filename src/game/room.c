@@ -23,16 +23,13 @@ static struct room *room_prev = rooms;
 static struct room *room_cur = rooms;
 static struct aabb next_door_hitbox;
 
-static T3DVec3 get_absolute_door_pos(const struct room *r, const bool is_door)
+static T3DVec3 get_prev_room_offset(const struct room *r)
 {
-        T3DVec3 total;
-        struct room *i;
+        T3DVec3 off;
 
-        total = is_door ? rooms->door_pos : t3d_vec3_zero();
-        for (i = rooms + 1; i <= r; ++i)
-                t3d_vec3_add(&total, &total, &i[is_door - 1].door_pos);
+        t3d_vec3_scale(&off, &r->door_pos, -1.f);
 
-        return total;
+        return off;
 }
 
 static struct room room_load(const uint8_t type)
@@ -75,7 +72,7 @@ static struct aabb door_hitbox_from_room(const struct room *r)
 {
         struct aabb bb;
 
-        bb.pos_offset = get_absolute_door_pos(r, true);
+        bb.pos_offset = r->door_pos;
         bb.min = t3d_vec3_make(-1.84f, 0.f, 0.f);
         bb.max = t3d_vec3_make(1.84f, 2.55f, 2.65f);
 
@@ -110,19 +107,28 @@ void room_update(struct player *p)
                 return;
         }
 
+        {
+                T3DVec3 to_door, zero;
+
+                zero = t3d_vec3_zero();
+                t3d_vec3_diff(&to_door, &(room_cur - 1)->door_pos,
+                              &p->position_b);
+                t3d_vec3_diff(&p->position_b, &zero, &to_door);
+                t3d_vec3_diff(&p->position_a, &zero, &to_door);
+        }
         next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
-static void room_render(const struct room *r, const T3DVec3 *pos,
+static void room_render(const struct room *r, const T3DVec3 *offset,
                         const float st)
 {
         int i;
-        T3DVec3 scale, rot, pos_scaled;
+        T3DVec3 scale, rot, pos;
 
         scale = t3d_vec3_one();
         rot = t3d_vec3_zero();
-        t3d_vec3_scale(&pos_scaled, pos, MODEL_SCALE);
-        t3d_mat4fp_from_srt_euler(r->mtx, scale.v, rot.v, pos_scaled.v);
+        t3d_vec3_scale(&pos, offset, MODEL_SCALE);
+        t3d_mat4fp_from_srt_euler(r->mtx, scale.v, rot.v, pos.v);
 
         /*
          * There's an almost always the objects
@@ -141,18 +147,32 @@ void rooms_render(const float subtick)
         const struct room *start, *r;
 
         /* Render 3 rooms at a time. The current one and the 2 previous. */
-        start = room_cur;
+        /*
+        start = room_cur - 1;
         if (start < rooms)
                 start = rooms;
+        */
 
+        /*
         for (r = start; r <= room_cur; ++r) {
-                T3DVec3 pos;
+                T3DVec3 off;
 
-                pos = get_absolute_door_pos(r, false);
-                /* pos = t3d_vec3_zero(); */
+                */
+        T3DVec3 off;
+        r = room_cur;
+
+        off = t3d_vec3_zero();
+        room_render(r, &off, subtick);
+
+        if (r - rooms > 0) {
                 rspq_wait();
-                room_render(r, &pos, subtick);
+                off = get_prev_room_offset(r - 1);
+                room_render(r - 1, &off, subtick);
         }
+        /*
+        }
+        */
+        debugf("Room %d\n", room_cur - rooms);
 
         aabb_render(&next_door_hitbox, 0x183048FF);
 }

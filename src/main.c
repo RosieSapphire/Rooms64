@@ -110,14 +110,7 @@ int main(void)
                 rdpq_mode_antialias(AA_NONE);
 
                 t3d_viewport_attach(&viewport);
-                /*
-                {
-                        uint32_t ambi32;
-
-                        ambi32 = U8ARR_TO_U32PACK(light_col_ambi);
-                        t3d_screen_clear_color(color_from_packed32(ambi32));
-                }
-                */
+                t3d_screen_clear_color(color_from_packed32(0x0));
                 t3d_screen_clear_depth();
 
                 t3d_light_set_ambient(light_col_ambi);

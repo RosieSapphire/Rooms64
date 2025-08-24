@@ -31,6 +31,11 @@ void aabb_render(const struct aabb *bb, const uint32_t color)
 
         v = malloc_uncached(sizeof(*v) * 12);
 
+        /*
+         * FIXME: This is horribly optimized. It doesn't even
+         * fit in the fucking instruction cache. Suck my dick, fix it!
+         */
+
         /* Bottom A */
         v[0].posA[0] = bb->min.v[0] * MODEL_SCALE;
         v[0].posA[1] = bb->min.v[1] * MODEL_SCALE;
