@@ -14,7 +14,7 @@
 #define PLAYER_VELOCITY_SCALE 30.f
 #define PLAYER_NOCLIP_SPEED_SLOW 4.2f
 #define PLAYER_NOCLIP_SPEED_FAST 12.2f
-#define PLAYER_HEADBOB_SCALE 0.031f
+#define PLAYER_HEADBOB_SCALE 0.016f
 #define PLAYER_HEADBOB_FACTOR 32.f
 
 struct player player_spawn(const T3DVec3 *spawn_pos, const float spawn_yaw,
@@ -257,8 +257,6 @@ static void player_update_headbob(struct player *p, const float ft)
 void player_update(struct player *p, const struct inputs *inp_new,
                    const struct inputs *inp_old, const float ft)
 {
-        debugf("Velocity: %f\n", t3d_vec3_len(&p->velocity));
-
 #ifdef PLAYER_NOCLIP
         p->mode ^= INPUT_PRESS_PTR(inp_new, inp_old, BTN_START);
 

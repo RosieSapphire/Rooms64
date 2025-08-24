@@ -10,7 +10,7 @@
 #include "game/player.h"
 #include "game/room.h"
 
-#define VIEWPORT_NEAR (.5f * MODEL_SCALE)
+#define VIEWPORT_NEAR (.25f * MODEL_SCALE)
 #define VIEWPORT_FAR (10.f * MODEL_SCALE)
 #define VIEWPORT_FOV_DEG 75.f
 

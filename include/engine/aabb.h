@@ -8,7 +8,5 @@ struct aabb {
         T3DVec3 max;
 };
 
-struct aabb aabb_make(const T3DVec3 *pos, const T3DVec3 *min,
-                      const T3DVec3 *max);
 bool aabb_does_point_intersect(const struct aabb *bb, const T3DVec3 *p);
 void aabb_render(const struct aabb *bb, const uint32_t color);

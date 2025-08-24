@@ -53,12 +53,9 @@ static struct room room_load(const uint8_t type)
                 float *pos_in;
 
                 pos_in = (float *)asset_load(room_dat_paths[type], NULL);
-                debugf("%f, %f, %f (%d)\n",
-                       pos_in[0], pos_in[1], pos_in[2], type);
                 /* TODO: This gets overwritten a bunch. Maybe just cache it. */
                 r.door_pos = t3d_vec3_make(pos_in[0], pos_in[1], pos_in[2]);
                 free(pos_in);
-                t3d_vec3_scale(&r.door_pos, &r.door_pos, MODEL_SCALE);
         }
 
         r.obj_cnt = 0;
@@ -79,8 +76,8 @@ static struct aabb door_hitbox_from_room(const struct room *r)
         struct aabb bb;
 
         bb.pos_offset = get_absolute_door_pos(r, true);
-        bb.min = t3d_vec3_make(-196.f, -196.f, 0.f);
-        bb.max = t3d_vec3_make(196.f, 196.f, 324.f);
+        bb.min = t3d_vec3_make(-1.84f, 0.f, 0.f);
+        bb.max = t3d_vec3_make(1.84f, 2.55f, 2.65f);
 
         return bb;
 }
@@ -95,7 +92,6 @@ void rooms_generate(void)
 
         /* First room is always the same. */
         rooms[0] = room_refs[0];
-
         for(int i = 1; i < ROOM_CNT; i++)
                 rooms[i] = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
 
@@ -104,49 +100,56 @@ void rooms_generate(void)
 
 void room_update(struct player *p)
 {
-        T3DVec3 player_pos_real;
-
-        t3d_vec3_scale(&player_pos_real, &p->position_b, MODEL_SCALE);
-
         room_prev = room_cur;
-        if (aabb_does_point_intersect(&next_door_hitbox, &player_pos_real)) {
-                if ((++room_cur - rooms) >= ROOM_CNT) {
-                        assertf(0, "Game win\n");
-                        return;
-                }
 
-                next_door_hitbox = door_hitbox_from_room(room_cur);
+        if (!aabb_does_point_intersect(&next_door_hitbox, &p->position_b))
+                return;
+
+        if ((++room_cur - rooms) >= ROOM_CNT) {
+                assertf(0, "Game win\n");
+                return;
         }
+
+        next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
 static void room_render(const struct room *r, const T3DVec3 *pos,
                         const float st)
 {
         int i;
-        T3DVec3 scale, rot;
+        T3DVec3 scale, rot, pos_scaled;
 
         scale = t3d_vec3_one();
         rot = t3d_vec3_zero();
-        t3d_mat4fp_from_srt_euler(r->mtx, scale.v, rot.v, pos->v);
+        t3d_vec3_scale(&pos_scaled, pos, MODEL_SCALE);
+        t3d_mat4fp_from_srt_euler(r->mtx, scale.v, rot.v, pos_scaled.v);
 
-        rspq_block_run(r->dl);
+        /*
+         * There's an almost always the objects
+         * will be in from of the room itself,
+         * so we render them first so it fails
+         * the depth buffer to reduce overdraw.
+         */
         for (i = 0; i < r->obj_cnt; ++i)
                 object_render(r->objs + i, st);
+
+        rspq_block_run(r->dl);
 }
 
 void rooms_render(const float subtick)
 {
-        const struct room *start;
-        const struct room *r;
+        const struct room *start, *r;
 
         /* Render 3 rooms at a time. The current one and the 2 previous. */
-        start = room_cur - 2;
+        start = room_cur;
         if (start < rooms)
                 start = rooms;
+
         for (r = start; r <= room_cur; ++r) {
                 T3DVec3 pos;
 
                 pos = get_absolute_door_pos(r, false);
+                /* pos = t3d_vec3_zero(); */
                 rspq_wait();
                 room_render(r, &pos, subtick);
         }
