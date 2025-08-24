@@ -108,15 +108,15 @@ void room_update(struct player *p)
         }
 
         {
-                T3DVec3 to_door, zero;
+                T3DVec3 from_door, push, b2a;
 
-                zero = t3d_vec3_zero();
-                t3d_vec3_diff(&to_door, &(room_cur - 1)->door_pos,
-                              &p->position_b);
-                t3d_vec3_diff(&p->position_b, &zero, &to_door);
-                t3d_vec3_diff(&p->position_a, &zero, &to_door);
+                t3d_vec3_diff(&from_door, &p->position_b,
+                              &(room_cur - 1)->door_pos);
+                t3d_vec3_diff(&b2a, &p->position_a, &p->position_b);
+                p->position_b = from_door;
+                t3d_vec3_add(&p->position_a, &b2a, &from_door);
+                next_door_hitbox = door_hitbox_from_room(room_cur);
         }
-        next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
 static void room_render(const struct room *r, const T3DVec3 *offset,
