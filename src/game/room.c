@@ -108,7 +108,7 @@ void room_update(struct player *p)
         }
 
         {
-                T3DVec3 from_door, push, b2a;
+                T3DVec3 from_door, b2a;
 
                 t3d_vec3_diff(&from_door, &p->position_b,
                               &(room_cur - 1)->door_pos);
@@ -144,7 +144,7 @@ static void room_render(const struct room *r, const T3DVec3 *offset,
 
 void rooms_render(const float subtick)
 {
-        const struct room *start, *r;
+        const struct room __attribute__((unused))*start, *r;
 
         /*
          * TODO: Render 3 rooms at a time.

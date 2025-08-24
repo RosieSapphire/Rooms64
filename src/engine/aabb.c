@@ -2,7 +2,9 @@
 
 #include "engine/aabb.h"
 
+#ifdef RENDER_HITBOXES
 static sprite_t *aabb_spr = NULL;
+#endif
 
 bool aabb_does_point_intersect(const struct aabb *bb, const T3DVec3 *p)
 {
