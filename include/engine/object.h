@@ -20,5 +20,5 @@ struct object {
 struct object object_create(const char *mdl_path, const T3DVec3 *pos,
                             const T3DVec3 *rot_eul, const T3DVec3 *scl,
                             void (*update_func)(struct object *, const float));
-void object_setup_matrix(struct object *obj, const float st);
+void object_render(const struct object *obj, const float st);
 void object_destroy(struct object *obj);

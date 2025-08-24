@@ -130,10 +130,8 @@ static void room_render(const struct room *r, const T3DVec3 *pos,
         t3d_mat4fp_from_srt_euler(r->mtx, scale.v, rot.v, pos->v);
 
         rspq_block_run(r->dl);
-        for (i = 0; i < r->obj_cnt; ++i) {
-                object_setup_matrix(r->objs + i, st);
-                rspq_block_run(r->objs[i].dl);
-        }
+        for (i = 0; i < r->obj_cnt; ++i)
+                object_render(r->objs + i, st);
 }
 
 void rooms_render(const float subtick)

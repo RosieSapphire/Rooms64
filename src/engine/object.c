@@ -28,7 +28,7 @@ struct object object_create(const char *mdl_path, const T3DVec3 *pos,
         return object;
 }
 
-void object_setup_matrix(struct object *obj, const float st)
+void object_render(const struct object *obj, const float st)
 {
         T3DVec3 scale, roteul, pos, pos_orig_old, pos_orig;
 
@@ -39,6 +39,7 @@ void object_setup_matrix(struct object *obj, const float st)
                       &obj->rotation_euler_b, st);
         t3d_vec3_lerp(&scale, &obj->scale_a, &obj->scale_b, st);
         t3d_mat4fp_from_srt_euler(obj->mtx, scale.v, roteul.v, pos.v);
+        rspq_block_run(obj->dl);
 }
 
 void object_destroy(struct object *obj)
