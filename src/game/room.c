@@ -119,12 +119,14 @@ static void room_update(struct room *r, struct player *p,
 {
         int i;
 
+        /*
         for (i = 0; i < r->obj_cnt; ++i) {
                 struct object *self;
 
                 self = r->objs + i;
                 self->update_function(self, ft);
         }
+        */
 
         /* Only handle door opening if it's the latest room. */
         if (r != room_cur)
@@ -140,6 +142,7 @@ static void room_update(struct room *r, struct player *p,
         if ((++room_cur - rooms) < TOTAL_ROOM_COUNT) {
                 T3DVec3 from_door, b2a;
 
+                r = room_cur;
                 t3d_vec3_diff(&from_door, &p->position_b, &(r - 1)->door_pos);
                 t3d_vec3_diff(&b2a, &p->position_a, &p->position_b);
                 p->position_b = from_door;
@@ -154,18 +157,18 @@ static void room_update(struct room *r, struct player *p,
 void rooms_update(struct player *p, const struct inputs *inp_new,
                   const struct inputs *inp_old, const float ft)
 {
+        /*
         struct room *start, *r;
 
         start = room_cur;
         for (r = start; r > start - MAX_ROOMS_ACTIVE_AT_ONCE; --r) {
-                /* If we don't have enough rooms to update, bail. */
                 if (r - rooms < 0)
                         continue;
 
                 room_update(r, p, inp_new, inp_old, ft);
         }
-
-        aabb_render(&next_door_hitbox, 0x183048FF);
+        */
+        room_update(room_cur, p, inp_new, inp_old, ft);
 }
 
 static void room_render(const struct room *r, const T3DVec3 *offset,
@@ -186,23 +189,18 @@ static void room_render(const struct room *r, const T3DVec3 *offset,
          * them first so it fails the
          * depth buffer to reduce overdraw.
          */
-        /*
         for (i = 0; i < r->obj_cnt; ++i) {
                 T3DVec3 off;
 
                 off = get_room_offset(room_cur, r);
                 object_render(r->objs + i, &off, st);
         }
-        */
 
-        /*
         rspq_block_run(r->dl);
-        */
 }
 
 void rooms_render(const float subtick)
 {
-        /*
         const struct room *start, *r;
         T3DVec3 off;
 
@@ -216,9 +214,8 @@ void rooms_render(const float subtick)
                 off = get_room_offset(start, r);
                 room_render(r, &off, subtick);
         }
-        */
 
-        /*aabb_render(&next_door_hitbox, 0x183048FF);*/
+        aabb_render(&next_door_hitbox, 0x183048FF);
 }
 
 void room_terminate(struct room *r)
