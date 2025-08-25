@@ -4,30 +4,31 @@
 
 #include "t3d_ext.h"
 
-#define ROOM_CNT 1000
-
-static const char *room_mdl_paths[ROOM_CNT] = {
+static const char *room_mdl_paths[TOTAL_ROOM_COUNT] = {
         "rom:/room00.t3dm",
         "rom:/room01.t3dm",
         "rom:/room02.t3dm"
 };
 
-static const char *room_dat_paths[ROOM_CNT] = {
+static const char *room_dat_paths[TOTAL_ROOM_COUNT] = {
         "rom:/room00.room",
         "rom:/room01.room",
         "rom:/room02.room"
 };
 
-static struct room rooms[ROOM_CNT];
+static struct room rooms[TOTAL_ROOM_COUNT];
 static struct room *room_prev = rooms;
 static struct room *room_cur = rooms;
 static struct aabb next_door_hitbox;
 
-static T3DVec3 get_prev_room_offset(const struct room *r)
+static T3DVec3 get_room_offset(const struct room *head, const struct room *tail)
 {
         T3DVec3 off;
+        const struct room *r;
 
-        t3d_vec3_scale(&off, &r->door_pos, -1.f);
+        off = t3d_vec3_zero();
+        for (r = head - 1; r >= tail; --r)
+                t3d_vec3_diff(&off, &off, &r->door_pos);
 
         return off;
 }
@@ -89,20 +90,33 @@ void rooms_generate(void)
 
         /* First room is always the same. */
         rooms[0] = room_refs[0];
-        for(int i = 1; i < ROOM_CNT; i++)
+        for(int i = 1; i < TOTAL_ROOM_COUNT; i++)
                 rooms[i] = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
 
         next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
-void room_update(struct player *p)
+void room_update(struct player *p, const struct inputs *inp_new,
+                 const struct inputs *inp_old)
 {
         room_prev = room_cur;
 
-        if (!aabb_does_point_intersect(&next_door_hitbox, &p->position_b))
+        {
+                uint32_t cur, max;
+                float progress;
+
+                cur = (room_cur - rooms);
+                max = TOTAL_ROOM_COUNT;
+                progress = ((float)cur / (float)TOTAL_ROOM_COUNT) * 100.f;
+                debugf("Progress: %.2f%% (%lu/%lu)\n", progress, cur, max);
+        }
+
+        if (!aabb_does_point_intersect(&next_door_hitbox, &p->position_b) &&
+            (p->mode != PLAYER_MODE_NOCLIP ||
+             !INPUT_PRESS_PTR(inp_new, inp_old, BTN_A)))
                 return;
 
-        if ((++room_cur - rooms) >= ROOM_CNT) {
+        if ((++room_cur - rooms) >= TOTAL_ROOM_COUNT) {
                 assertf(0, "Game win\n");
                 return;
         }
@@ -144,23 +158,24 @@ static void room_render(const struct room *r, const T3DVec3 *offset,
 
 void rooms_render(const float subtick)
 {
-        const struct room __attribute__((unused))*start, *r;
-
-        /*
-         * TODO: Render 3 rooms at a time.
-         * The current one and the 2 previous.
-         */
+        const struct room *start, *r;
         T3DVec3 off;
-        r = room_cur;
+        int i;
 
+        start = room_cur;
         off = t3d_vec3_zero();
-        room_render(r, &off, subtick);
+        room_render(start, &off, subtick);
 
-        if (r - rooms > 0) {
+        for (r = start - 1; r > start - MAX_ROOMS_ACTIVE_AT_ONCE; --r) {
+                /* If we don't have enough rooms to render, bail. */
+                if (r - rooms < 0)
+                        continue;
+
                 rspq_wait();
-                off = get_prev_room_offset(r - 1);
-                room_render(r - 1, &off, subtick);
+                off = get_room_offset(start, r);
+                room_render(r, &off, subtick);
         }
+
         aabb_render(&next_door_hitbox, 0x183048FF);
 }
 
