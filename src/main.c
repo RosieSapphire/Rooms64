@@ -7,6 +7,7 @@
 
 #include "engine/object.h"
 
+#include "game/sound.h"
 #include "game/player.h"
 #include "game/room.h"
 
@@ -20,11 +21,6 @@ int main(void)
         int dfs_handle;
         float time_accumulated;
         uint8_t light_col_ambi[4];
-
-        /*
-        T3DVec3 light_direction;
-        uint8_t light_col_direction[4];
-        */
 
         struct player player;
 
@@ -40,6 +36,7 @@ int main(void)
 #endif
         asset_init_compression(COMPRESS_LEVEL);
         dfs_handle = dfs_init(DFS_DEFAULT_LOCATION);
+        sound_init();
 
         /* Initialize Tiny3D. */
         t3d_init((T3DInitParams){});
@@ -58,14 +55,6 @@ int main(void)
                 player = player_spawn(&pos, yaw, pitch, PLAYER_MODE_STANDARD);
         }
 
-        /*
-        light_direction = t3d_vec3_make(-1.f, 1.f, 0.f);
-        t3d_vec3_norm(&light_direction);
-        light_col_direction[0] = 0xFF;
-        light_col_direction[1] = 0xFF;
-        light_col_direction[2] = 0xFF;
-        light_col_direction[3] = 0xFF;
-        */
         light_col_ambi[0] = 0xFF;
         light_col_ambi[1] = 0xFF;
         light_col_ambi[2] = 0xFF;
@@ -114,25 +103,19 @@ int main(void)
                 t3d_screen_clear_depth();
 
                 t3d_light_set_ambient(light_col_ambi);
-                /*
-                t3d_light_set_directional(0, light_col_direction,
-                                          &light_direction);
-                t3d_light_set_count(1);
-                */
                 t3d_light_set_count(0);
-
                 rooms_render(subtick);
 
                 rdpq_detach_show();
-        }
 
-        /* Terminate game. */
-        /* room_terminate(); */
+                sound_poll();
+        }
 
         /* Terminate Tiny3D. */
         t3d_destroy();
 
         /* Terminate Libdragon. */
+        sound_terminate();
         dfs_close(dfs_handle);
         joypad_close();
         rdpq_close();

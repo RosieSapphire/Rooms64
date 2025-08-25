@@ -1,3 +1,4 @@
+#include "game/sound.h"
 #include "game/player.h"
 
 #include "util.h"
@@ -16,6 +17,8 @@
 #define PLAYER_NOCLIP_SPEED_FAST 12.2f
 #define PLAYER_HEADBOB_SCALE 0.016f
 #define PLAYER_HEADBOB_FACTOR 32.f
+
+#define PLAYER_SPEED_TO_FOOTSTEP_VOLUME 0.06f
 
 struct player player_spawn(const T3DVec3 *spawn_pos, const float spawn_yaw,
                            const float spawn_pitch, const uint8_t mode)
@@ -225,19 +228,17 @@ static void player_update_headbob(struct player *p, const float ft)
         sin_bob = sinf(p->headbob_timer_b);
         sin2_bob = sinf(p->headbob_timer_b * 2);
 
-        /* TODO: Play footstep sound. */
-#if 0
-        mixer_ch_set_vol(SFXC_FOOTSTEP, speed * 2, speed * 2);
-
         if(fabsf(sin_bob) >= 0.8f) {
-                if(!played_footstep) {
-                        wav64_play(&footstep_sfx, 1);
-                        played_footstep = true;
+                if(!p->has_played_footstep) {
+                        const float vol = PLAYER_SPEED_TO_FOOTSTEP_VOLUME;
+
+                        debugf("vol=%f\n", speed * vol);
+                        sound_play(SFX_FOOTSTEP, MIXER_CH_PLAYER, speed * vol);
+                        p->has_played_footstep = true;
                 }
         } else {
-                played_footstep = false;
+                p->has_played_footstep = false;
         }
-#endif
 
         {
                 T3DVec3 forw;

@@ -90,7 +90,7 @@ void rooms_generate(void)
 
         /* First room is always the same. */
         rooms[0] = room_refs[0];
-        for(int i = 1; i < TOTAL_ROOM_COUNT; i++)
+        for(i = 1; i < TOTAL_ROOM_COUNT; i++)
                 rooms[i] = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
 
         next_door_hitbox = door_hitbox_from_room(room_cur);
@@ -160,7 +160,6 @@ void rooms_render(const float subtick)
 {
         const struct room *start, *r;
         T3DVec3 off;
-        int i;
 
         start = room_cur;
         off = t3d_vec3_zero();
