@@ -17,24 +17,37 @@ struct object object_create(const char *mdl_path, const T3DVec3 *pos,
         t3d_matrix_pop(1);
         object.dl = rspq_block_end();
 
-        object.position_a = *pos;
+        if (pos)
+                object.position_a = *pos;
+        else
+                object.position_a = t3d_vec3_zero();
         object.position_b = object.position_a;
-        object.rotation_euler_a = *rot_eul;
+
+        if (rot_eul)
+                object.rotation_euler_a = *rot_eul;
+        else
+                object.rotation_euler_a = t3d_vec3_zero();
         object.rotation_euler_b = object.rotation_euler_a;
-        object.scale_a = *scl;
+
+        if (scl)
+                object.scale_a = *scl;
+        else
+                object.scale_a = t3d_vec3_one();
         object.scale_b = object.scale_a;
+
         object.update_function = update_func;
 
         return object;
 }
 
-void object_render(const struct object *obj, const float st)
+void object_render(const struct object *obj, const T3DVec3 *off,
+                   const float st)
 {
-        T3DVec3 scale, roteul, pos, pos_orig_old, pos_orig;
+        T3DVec3 scale, roteul, pos;
 
-        t3d_vec3_scale(&pos_orig_old, &obj->position_a, MODEL_SCALE);
-        t3d_vec3_scale(&pos_orig, &obj->position_b, MODEL_SCALE);
-        t3d_vec3_lerp(&pos, &pos_orig_old, &pos_orig, st);
+        t3d_vec3_lerp(&pos, &obj->position_a, &obj->position_b, st);
+        t3d_vec3_add(&pos, &pos, off);
+        t3d_vec3_scale(&pos, &pos, MODEL_SCALE);
         t3d_vec3_lerp(&roteul, &obj->rotation_euler_a,
                       &obj->rotation_euler_b, st);
         t3d_vec3_lerp(&scale, &obj->scale_a, &obj->scale_b, st);

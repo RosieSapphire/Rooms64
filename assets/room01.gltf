@@ -71,7 +71,7 @@
 			"name":"DoorPos",
 			"translation":[
 				0,
-				-9.138772964477539,
+				-8.56938648223877,
 				0
 			]
 		}
@@ -571,13 +571,13 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":52,
+			"count":40,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":52,
+			"count":40,
 			"max":[
 				3.996739387512207,
 				0,
@@ -585,7 +585,7 @@
 			],
 			"min":[
 				-4.003260612487793,
-				-9.138772964477539,
+				-8.56938648223877,
 				0
 			],
 			"type":"VEC3"
@@ -593,31 +593,31 @@
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":52,
+			"count":40,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":3,
 			"componentType":5126,
-			"count":52,
+			"count":40,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":4,
 			"componentType":5123,
-			"count":90,
+			"count":72,
 			"type":"SCALAR"
 		},
 		{
 			"bufferView":5,
 			"componentType":5126,
-			"count":16,
+			"count":12,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":6,
 			"componentType":5126,
-			"count":16,
+			"count":12,
 			"max":[
 				3.996738910675049,
 				0,
@@ -625,7 +625,7 @@
 			],
 			"min":[
 				-4.003260612487793,
-				-9.138772964477539,
+				-8.56938648223877,
 				0
 			],
 			"type":"VEC3"
@@ -633,87 +633,87 @@
 		{
 			"bufferView":7,
 			"componentType":5126,
-			"count":16,
+			"count":12,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":8,
 			"componentType":5126,
-			"count":16,
+			"count":12,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":9,
 			"componentType":5123,
-			"count":30,
+			"count":24,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":832,
+			"byteLength":640,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":624,
-			"byteOffset":832,
+			"byteLength":480,
+			"byteOffset":640,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":624,
-			"byteOffset":1456,
+			"byteLength":480,
+			"byteOffset":1120,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":416,
-			"byteOffset":2080,
+			"byteLength":320,
+			"byteOffset":1600,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":180,
-			"byteOffset":2496,
+			"byteLength":144,
+			"byteOffset":1920,
 			"target":34963
 		},
 		{
 			"buffer":0,
-			"byteLength":256,
-			"byteOffset":2676,
-			"target":34962
-		},
-		{
-			"buffer":0,
 			"byteLength":192,
-			"byteOffset":2932,
+			"byteOffset":2064,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":192,
-			"byteOffset":3124,
+			"byteLength":144,
+			"byteOffset":2256,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":128,
-			"byteOffset":3316,
+			"byteLength":144,
+			"byteOffset":2400,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":60,
-			"byteOffset":3444,
+			"byteLength":96,
+			"byteOffset":2544,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":48,
+			"byteOffset":2640,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":3504,
+			"byteLength":2688,
 			"uri":"room01.bin"
 		}
 	]

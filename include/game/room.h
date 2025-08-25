@@ -24,8 +24,8 @@ struct room {
 };
 
 void rooms_generate(void);
-void room_update(struct player *p, const struct inputs *inp_new,
-                 const struct inputs *inp_old);
+void rooms_update(struct player *p, const struct inputs *inp_new,
+                  const struct inputs *inp_old, const float ft);
 void rooms_render(const float subtick);
 void room_terminate(struct room *r);
 

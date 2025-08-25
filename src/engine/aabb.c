@@ -2,7 +2,7 @@
 
 #include "engine/aabb.h"
 
-#ifdef RENDER_HITBOXES
+#ifdef RENDER_AABB
 static sprite_t *aabb_spr = NULL;
 #endif
 
@@ -21,7 +21,7 @@ bool aabb_does_point_intersect(const struct aabb *bb, const T3DVec3 *p)
         return true;
 }
 
-#ifdef AABB_RENDER
+#ifdef RENDER_AABB
 void aabb_render(const struct aabb *bb, const uint32_t color)
 {
         T3DVertPacked *v;
@@ -176,12 +176,13 @@ void aabb_render(const struct aabb *bb, const uint32_t color)
         }
 
         rdpq_sync_pipe();
-        rdpq_sprite_upload(TILE0, aabb_spr, NULL);
+        rdpq_mode_zbuf(false, false);
         rdpq_mode_combiner(RDPQ_COMBINER_TEX_SHADE);
         rdpq_mode_filter(FILTER_POINT);
         rdpq_mode_alphacompare(1);
         t3d_state_set_drawflags(T3D_FLAG_SHADED | T3D_FLAG_DEPTH |
                                 T3D_FLAG_TEXTURED);
+        rdpq_sprite_upload(TILE0, aabb_spr, NULL);
         t3d_light_set_ambient((uint8_t[4]){0xFF, 0xFF, 0xFF, 0xFF});
         t3d_light_set_count(0);
         t3d_matrix_push(mtxfp);

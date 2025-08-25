@@ -77,7 +77,7 @@ int main(void)
                         inp_new = inputs_get_from_libdragon();
 
                         player_update(&player, &inp_new, &inp_old, fixed_time);
-                        room_update(&player, &inp_new, &inp_old);
+                        rooms_update(&player, &inp_new, &inp_old, fixed_time);
                 }
 
                 /* Rendering Setup */
@@ -99,12 +99,14 @@ int main(void)
                 rdpq_mode_antialias(AA_NONE);
 
                 t3d_viewport_attach(&viewport);
+                /*
                 t3d_screen_clear_color(color_from_packed32(0x0));
                 t3d_screen_clear_depth();
 
                 t3d_light_set_ambient(light_col_ambi);
                 t3d_light_set_count(0);
                 rooms_render(subtick);
+                */
 
                 rdpq_detach_show();
 
