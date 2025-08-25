@@ -3,7 +3,8 @@
 #include "game/sound.h"
 
 static const char *sound_paths[SFX_COUNT] = {
-        "rom:/sfx_footstep.wav64"
+        "rom:/sfx_footstep.wav64",
+        "rom:/sfx_door_open.wav64"
 };
 
 static wav64_t *sound_samples[SFX_COUNT];

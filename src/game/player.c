@@ -232,7 +232,6 @@ static void player_update_headbob(struct player *p, const float ft)
                 if(!p->has_played_footstep) {
                         const float vol = PLAYER_SPEED_TO_FOOTSTEP_VOLUME;
 
-                        debugf("vol=%f\n", speed * vol);
                         sound_play(SFX_FOOTSTEP, MIXER_CH_PLAYER, speed * vol);
                         p->has_played_footstep = true;
                 }

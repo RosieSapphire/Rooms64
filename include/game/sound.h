@@ -11,6 +11,7 @@ enum {
 
 enum {
         SFX_FOOTSTEP,
+        SFX_DOOR_OPEN,
         SFX_COUNT
 };
 

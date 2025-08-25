@@ -1,5 +1,6 @@
 #include "engine/aabb.h"
 
+#include "game/sound.h"
 #include "game/room.h"
 
 #include "t3d_ext.h"
@@ -116,12 +117,9 @@ void room_update(struct player *p, const struct inputs *inp_new,
              !INPUT_PRESS_PTR(inp_new, inp_old, BTN_A)))
                 return;
 
-        if ((++room_cur - rooms) >= TOTAL_ROOM_COUNT) {
-                assertf(0, "Game win\n");
-                return;
-        }
+        sound_play(SFX_DOOR_OPEN, MIXER_CH_DOOR, .14f);
 
-        {
+        if ((++room_cur - rooms) < TOTAL_ROOM_COUNT) {
                 T3DVec3 from_door, b2a;
 
                 t3d_vec3_diff(&from_door, &p->position_b,
@@ -130,7 +128,10 @@ void room_update(struct player *p, const struct inputs *inp_new,
                 p->position_b = from_door;
                 t3d_vec3_add(&p->position_a, &b2a, &from_door);
                 next_door_hitbox = door_hitbox_from_room(room_cur);
+                return;
         }
+
+        assertf(0, "Game win\n");
 }
 
 static void room_render(const struct room *r, const T3DVec3 *offset,
