@@ -5,15 +5,29 @@
 
 #include "t3d_ext.h"
 
-#define DOOR_OBJECT_COUNT_MAX (MAX_ROOMS_ACTIVE_AT_ONCE + 1)
+#define DOOR_TURN_SPEED 180.f
+#define DOOR_X_OFFSET 0.625f
+
+#define DOOR_FROM_OBJ_PTR(OBJ_PTR) (door_objects + (OBJ_PTR)->sub_obj_index)
+#define AS_ROOM_PTR(VOID_PTR) ((struct room *)(VOID_PTR))
 
 struct door_object {
-        struct object *obj_handle;
+        struct object *header;
+        float start_angle;
         float open_progress;
 };
 
-static struct door_object door_objects[DOOR_OBJECT_COUNT_MAX];
-static uint16_t door_object_head = 0;
+/*
+ * TODO: Make this the size of how many doors that can be
+ * visible at one time. That way instead of taking up a
+ * bunch of space with the `door_objects` array, it only
+ * has how many are gonna be used at a given time, and
+ * when you enter another room, the whole array gets
+ * shifted down (which works because you can't go back
+ * through a door that's already been closed.
+ */
+static struct door_object door_objects[TOTAL_ROOM_COUNT];
+static uint32_t door_object_head;
 
 static const char *room_mdl_paths[TOTAL_ROOM_COUNT] = {
         "rom:/room00.t3dm",
@@ -31,14 +45,6 @@ static struct room rooms[TOTAL_ROOM_COUNT];
 static struct room *room_cur = rooms;
 static struct aabb next_door_hitbox;
 
-static void door_update(struct object *o, __attribute__((unused))const float ft)
-{
-        struct door_object *d;
-
-        d = door_objects + o->sub_obj_index;
-        debugf("Door is updating. %f\n", d->open_progress);
-}
-
 static T3DVec3 get_room_offset(const struct room *head, const struct room *tail)
 {
         T3DVec3 off;
@@ -49,6 +55,52 @@ static T3DVec3 get_room_offset(const struct room *head, const struct room *tail)
                 t3d_vec3_diff(&off, &off, &r->door_pos);
 
         return off;
+}
+
+static T3DVec3 get_absolute_door_pos(struct door_object *d)
+{
+        return t3d_vec3_zero();
+}
+
+static void door_update(struct object *o, const float ft)
+{
+        struct door_object *d;
+        struct room *r;
+        T3DVec3 rot, pos;
+        float min;
+
+        d = DOOR_FROM_OBJ_PTR(o);
+        r = AS_ROOM_PTR(o->parent);
+        min = d->start_angle - 90.f;
+        if (r < room_cur)
+                d->open_progress -= ft * DOOR_TURN_SPEED;
+
+        if (d->open_progress <= min)
+                d->open_progress = min;
+
+        rot = t3d_vec3_zero();
+        rot.v[2] = T3D_DEG_TO_RAD(d->start_angle + d->open_progress);
+
+        pos = get_room_offset(room_cur, r);
+        t3d_vec3_add(&pos, &pos, &r->door_pos);
+        {
+                T3DVec3 offset;
+
+                offset = t3d_vec3_make(DOOR_X_OFFSET, 0.f, 0.f);
+                t3d_vec3_add(&pos, &pos, &offset);
+        }
+        object_set_transforms(o, NULL, &rot, &pos, INTERP_ROT);
+}
+
+static struct aabb door_hitbox_from_room(const struct room *r)
+{
+        struct aabb bb;
+
+        bb.pos_offset = r->door_pos;
+        bb.min = t3d_vec3_make(-1.84f, 0.f, 0.f);
+        bb.max = t3d_vec3_make(1.84f, 2.55f, 2.65f);
+
+        return bb;
 }
 
 static struct room room_load(const uint8_t type)
@@ -74,27 +126,47 @@ static struct room room_load(const uint8_t type)
                 free(pos_in);
         }
 
-        r.obj_cnt = 1;
-        r.objs = malloc(sizeof(*r.objs) * r.obj_cnt);
-        r.objs[0] = object_create("rom:/obj_door.t3dm", &r.door_pos,
-                                  NULL, NULL, door_update);
-        r.objs[0].sub_obj_index = door_object_head;
-        door_objects[door_object_head].obj_handle = r.objs + 0;
-        door_objects[door_object_head].open_progress = 69.f;
-        ++door_object_head;
-
         return r;
 }
 
-static struct aabb door_hitbox_from_room(const struct room *r)
+static void room_init_door(struct room *r, const float start_angle)
 {
-        struct aabb bb;
+        struct object *o;
+        struct door_object *d;
+        T3DVec3 pos, off;
 
-        bb.pos_offset = r->door_pos;
-        bb.min = t3d_vec3_make(-1.84f, 0.f, 0.f);
-        bb.max = t3d_vec3_make(1.84f, 2.55f, 2.65f);
+        /* Allocate object slot */
+        r->obj_cnt = 1;
+        r->objs = malloc(sizeof(*r->objs) * r->obj_cnt);
 
-        return bb;
+        /* Create object in slot */
+        o = r->objs + 0;
+        pos = get_room_offset(rooms, r);
+        t3d_vec3_add(&pos, &pos, &r->door_pos);
+        off = t3d_vec3_make(DOOR_X_OFFSET, 0.f, 0.f);
+        t3d_vec3_add(&pos, &pos, &off);
+        *o = object_create("rom:/obj_door.t3dm", NULL, NULL,
+                           &pos, door_update, r);
+
+        /*
+         * FIXME: This works fine now because
+         * the number of door slots is equal
+         * to the number of rooms, but once
+         * this gets optimized to only the
+         * amount of rooms visible at a time,
+         * we will need a different way of
+         * handling this. Possibly a head
+         * integer that wraps around, something
+         * like that.
+         */
+        o->sub_obj_index = r - rooms;
+
+        /* Setup subobject (door) variables */
+        d = DOOR_FROM_OBJ_PTR(o);
+        d->header = o;
+        d->start_angle = start_angle;
+        d->open_progress = start_angle;
+
 }
 
 void rooms_generate(void)
@@ -107,8 +179,17 @@ void rooms_generate(void)
 
         /* First room is always the same. */
         rooms[0] = room_refs[0];
-        for(i = 1; i < TOTAL_ROOM_COUNT; i++)
-                rooms[i] = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
+        room_init_door(rooms + 0, 0.f);
+        for(i = 1; i < TOTAL_ROOM_COUNT; i++) {
+                struct room *r;
+
+                assertf(i <= TOTAL_ROOM_COUNT,
+                        "Too many door objects have been loaded (%d).", i);
+
+                r = rooms + i;
+                *r = room_refs[1 + (rand() % (ROOM_TYPE_CNT - 1))];
+                room_init_door(r, 0.f);
+        }
 
         next_door_hitbox = door_hitbox_from_room(room_cur);
 }
@@ -119,14 +200,12 @@ static void room_update(struct room *r, struct player *p,
 {
         int i;
 
-        /*
         for (i = 0; i < r->obj_cnt; ++i) {
                 struct object *self;
 
                 self = r->objs + i;
                 self->update_function(self, ft);
         }
-        */
 
         /* Only handle door opening if it's the latest room. */
         if (r != room_cur)
@@ -157,18 +236,40 @@ static void room_update(struct room *r, struct player *p,
 void rooms_update(struct player *p, const struct inputs *inp_new,
                   const struct inputs *inp_old, const float ft)
 {
-        /*
         struct room *start, *r;
+        struct room *room_prev;
 
         start = room_cur;
+        room_prev = room_cur;
         for (r = start; r > start - MAX_ROOMS_ACTIVE_AT_ONCE; --r) {
                 if (r - rooms < 0)
                         continue;
 
                 room_update(r, p, inp_new, inp_old, ft);
+
+                /*
+                 * FIXME: THIS IS EXTREMELY FUCKING CRINGE!
+                 * So basically, the code for checking for entering
+                 * the next room gets run AFTER the objects of a
+                 * room has been updated, which included the doors.
+                 * When a door gets updated, its transform gets updated
+                 * to be in line with its variables. The thing is,
+                 * the position of the door is dependent on which room
+                 * we are currently in at the time of the code's execution.
+                 * The problem with this is that if we go to a new room,
+                 * that gets checked for AFTER we've already updated the
+                 * door, meaning that for the first frame after opening
+                 * a new door, it is at the position of the NEXT door
+                 * for a single frame. This is an unfortunately cringe
+                 * implementation due to how fucking shitty this system
+                 * is structured and how cobbled together it is.
+                 * Hopefully somebody in the N64Brew server have some
+                 * ideas for this 'cuz I'm too much of a dipshit to
+                 * figure it out. lmao
+                 */
+                if (room_cur != room_prev)
+                        r->objs[0].update_function(r->objs + 0, ft);
         }
-        */
-        room_update(room_cur, p, inp_new, inp_old, ft);
 }
 
 static void room_render(const struct room *r, const T3DVec3 *offset,
@@ -190,10 +291,13 @@ static void room_render(const struct room *r, const T3DVec3 *offset,
          * depth buffer to reduce overdraw.
          */
         for (i = 0; i < r->obj_cnt; ++i) {
-                T3DVec3 off;
+                struct object *o;
+                struct door_object *d;
+                T3DVec3 or, op, door_off;
 
-                off = get_room_offset(room_cur, r);
-                object_render(r->objs + i, &off, st);
+                o = r->objs + i;
+                d = DOOR_FROM_OBJ_PTR(o);
+                object_render(o, st);
         }
 
         rspq_block_run(r->dl);
