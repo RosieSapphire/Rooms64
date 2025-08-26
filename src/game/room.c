@@ -194,23 +194,9 @@ void rooms_generate(void)
         next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
-static void room_update(struct room *r, struct player *p,
-                        const struct inputs *inp_new,
-                        const struct inputs *inp_old, const float ft)
+static void room_update_current(struct player *p, const struct inputs *inp_new,
+                                const struct inputs *inp_old, const float ft)
 {
-        int i;
-
-        for (i = 0; i < r->obj_cnt; ++i) {
-                struct object *self;
-
-                self = r->objs + i;
-                self->update_function(self, ft);
-        }
-
-        /* Only handle door opening if it's the latest room. */
-        if (r != room_cur)
-                return;
-
         if (!aabb_does_point_intersect(&next_door_hitbox, &p->position_b) &&
             (p->mode != PLAYER_MODE_NOCLIP ||
              !INPUT_PRESS_PTR(inp_new, inp_old, BTN_A)))
@@ -221,16 +207,29 @@ static void room_update(struct room *r, struct player *p,
         if ((++room_cur - rooms) < TOTAL_ROOM_COUNT) {
                 T3DVec3 from_door, b2a;
 
-                r = room_cur;
-                t3d_vec3_diff(&from_door, &p->position_b, &(r - 1)->door_pos);
+                room_cur = room_cur;
+                t3d_vec3_diff(&from_door, &p->position_b,
+                              &(room_cur - 1)->door_pos);
                 t3d_vec3_diff(&b2a, &p->position_a, &p->position_b);
                 p->position_b = from_door;
                 t3d_vec3_add(&p->position_a, &b2a, &from_door);
-                next_door_hitbox = door_hitbox_from_room(r);
+                next_door_hitbox = door_hitbox_from_room(room_cur);
                 return;
         }
 
         assertf(0, "Game win\n");
+}
+
+static void room_update_objects(struct room *r, const float ft)
+{
+        int i;
+
+        for (i = 0; i < r->obj_cnt; ++i) {
+                struct object *obj;
+
+                obj = r->objs + i;
+                obj->update_function(obj, ft);
+        }
 }
 
 void rooms_update(struct player *p, const struct inputs *inp_new,
@@ -245,30 +244,8 @@ void rooms_update(struct player *p, const struct inputs *inp_new,
                 if (r - rooms < 0)
                         continue;
 
-                room_update(r, p, inp_new, inp_old, ft);
-
-                /*
-                 * FIXME: THIS IS EXTREMELY FUCKING CRINGE!
-                 * So basically, the code for checking for entering
-                 * the next room gets run AFTER the objects of a
-                 * room has been updated, which included the doors.
-                 * When a door gets updated, its transform gets updated
-                 * to be in line with its variables. The thing is,
-                 * the position of the door is dependent on which room
-                 * we are currently in at the time of the code's execution.
-                 * The problem with this is that if we go to a new room,
-                 * that gets checked for AFTER we've already updated the
-                 * door, meaning that for the first frame after opening
-                 * a new door, it is at the position of the NEXT door
-                 * for a single frame. This is an unfortunately cringe
-                 * implementation due to how fucking shitty this system
-                 * is structured and how cobbled together it is.
-                 * Hopefully somebody in the N64Brew server have some
-                 * ideas for this 'cuz I'm too much of a dipshit to
-                 * figure it out. lmao
-                 */
-                if (room_cur != room_prev)
-                        r->objs[0].update_function(r->objs + 0, ft);
+                room_update_current(p, inp_new, inp_old, ft);
+                room_update_objects(r, ft);
         }
 }
 
