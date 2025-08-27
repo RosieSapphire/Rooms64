@@ -204,16 +204,19 @@ static void room_update_current(struct player *p, const struct inputs *inp_new,
 
         sound_play(SFX_DOOR_OPEN, MIXER_CH_DOOR, .14f);
 
+        int prev = (room_cur - rooms);
         if ((++room_cur - rooms) < TOTAL_ROOM_COUNT) {
                 T3DVec3 from_door, b2a;
+                int cur;
 
-                room_cur = room_cur;
                 t3d_vec3_diff(&from_door, &p->position_b,
                               &(room_cur - 1)->door_pos);
                 t3d_vec3_diff(&b2a, &p->position_a, &p->position_b);
                 p->position_b = from_door;
                 t3d_vec3_add(&p->position_a, &b2a, &from_door);
                 next_door_hitbox = door_hitbox_from_room(room_cur);
+                cur = (room_cur - rooms);
+                debugf("Prev: %d | Cur: %d\n", prev, cur);
                 return;
         }
 
@@ -240,11 +243,11 @@ void rooms_update(struct player *p, const struct inputs *inp_new,
 
         start = room_cur;
         room_prev = room_cur;
+        room_update_current(p, inp_new, inp_old, ft);
         for (r = start; r > start - MAX_ROOMS_ACTIVE_AT_ONCE; --r) {
                 if (r - rooms < 0)
                         continue;
 
-                room_update_current(p, inp_new, inp_old, ft);
                 room_update_objects(r, ft);
         }
 }
