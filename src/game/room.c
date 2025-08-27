@@ -32,13 +32,19 @@ static uint32_t door_object_head;
 static const char *room_mdl_paths[TOTAL_ROOM_COUNT] = {
         "rom:/room00.t3dm",
         "rom:/room01.t3dm",
-        "rom:/room02.t3dm"
+        "rom:/room02.t3dm",
+        "rom:/room03.t3dm",
+        "rom:/room04.t3dm",
+        "rom:/room05.t3dm"
 };
 
 static const char *room_dat_paths[TOTAL_ROOM_COUNT] = {
         "rom:/room00.room",
         "rom:/room01.room",
-        "rom:/room02.room"
+        "rom:/room02.room",
+        "rom:/room03.room",
+        "rom:/room04.room",
+        "rom:/room05.room"
 };
 
 static struct room rooms[TOTAL_ROOM_COUNT];
@@ -216,7 +222,6 @@ static void room_update_current(struct player *p, const struct inputs *inp_new,
                 t3d_vec3_add(&p->position_a, &b2a, &from_door);
                 next_door_hitbox = door_hitbox_from_room(room_cur);
                 cur = (room_cur - rooms);
-                debugf("Prev: %d | Cur: %d\n", prev, cur);
                 return;
         }
 

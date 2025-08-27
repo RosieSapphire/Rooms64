@@ -8,26 +8,24 @@
 		{
 			"extras":{
 				"fast64":{
+					"settings":{
+						"internal_game_update_ver":1
+					},
 					"sm64":{
-						"exportType":0,
-						"version":3,
 						"address_converter":{
 							"version":1
 						},
-						"combined_export":{}
-					},
-					"settings":{
-						"internal_game_update_ver":1,
-						"dont_ask_color_management":1
+						"combined_export":{},
+						"version":3
 					},
 					"renderSettings":{}
 				},
+				"f3d_lib_dir":"/home/rosie/.config/blender/4.0/scripts/addons/fast64/fast64_internal/f3d/f3d_material_library.blend/NodeTree",
+				"f3d_simple":0,
 				"opLargeTextureProperty":{
 					"mat":{}
 				},
 				"f3d_type":6,
-				"f3d_simple":0,
-				"f3d_lib_dir":"/home/rosie/.config/blender/4.0/scripts/addons/fast64/fast64_internal/f3d/f3d_material_library.blend/NodeTree",
 				"ootPreviewSettingsProperty":{
 					"ootCSPreviewCSObj":{}
 				}
@@ -35,7 +33,17 @@
 			"name":"Scene",
 			"nodes":[
 				0,
-				1
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11
 			]
 		}
 	],
@@ -44,19 +52,184 @@
 			"extras":{
 				"fast64":{
 					"sm64":{
-						"geo_asm":{
-							"func":"",
-							"param":"0"
-						},
-						"game_object":{
-							"bparams":"0x00000000"
-						},
+						"geo_asm":{},
+						"game_object":{},
 						"version":3
 					}
 				}
 			},
 			"mesh":0,
-			"name":"Room"
+			"name":"Cube"
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.009",
+			"translation":[
+				-4.289053440093994,
+				-1.4892492294311523,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.008",
+			"translation":[
+				-4.289053440093994,
+				-3.375790596008301,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.007",
+			"translation":[
+				-4.289053440093994,
+				-5.193312644958496,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.006",
+			"translation":[
+				-4.289053440093994,
+				-7.160377025604248,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.005",
+			"translation":[
+				-4.289053440093994,
+				-9.046918869018555,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.004",
+			"translation":[
+				4.282532215118408,
+				-1.4593403339385986,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.003",
+			"translation":[
+				4.282532215118408,
+				-3.345881938934326,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.002",
+			"translation":[
+				4.282532215118408,
+				-5.312946319580078,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.001",
+			"translation":[
+				4.282532215118408,
+				-7.130468368530273,
+				0
+			]
+		},
+		{
+			"extras":{
+				"fast64":{
+					"sm64":{
+						"geo_asm":{},
+						"game_object":{},
+						"version":3
+					}
+				}
+			},
+			"name":"Locker.000",
+			"translation":[
+				4.282532215118408,
+				-9.017009735107422,
+				0
+			]
 		},
 		{
 			"extras":{
@@ -71,7 +244,7 @@
 			"name":"DoorPos",
 			"translation":[
 				0,
-				-8.56938648223877,
+				-10.312946319580078,
 				0
 			]
 		}
@@ -125,8 +298,7 @@
 							"mask":6,
 							"shift":0,
 							"low":0.0,
-							"high":63.0,
-							"clamp":0
+							"high":63.0
 						},
 						"T":{
 							"mask":6,
@@ -234,7 +406,7 @@
 						"g_attroffset_st_enable":0,
 						"g_cull_front":0,
 						"g_cull_back":1,
-						"g_packed_normals":0,
+						"g_packed_normals":1,
 						"g_lighttoalpha":0,
 						"g_lighting_specular":0,
 						"g_fresnel_color":0,
@@ -296,7 +468,9 @@
 					"tex_scale":[
 						1.0,
 						1.0
-					]
+					],
+					"use_large_textures":0,
+					"scale_autoprop":1
 				},
 				"ootMaterial":{},
 				"objex_bonus":{},
@@ -347,7 +521,7 @@
 					"tex0":{
 						"tex_set":1,
 						"tex":{
-							"name":"carpet.ci4.png",
+							"name":"carpet_blue.ci4.png",
 							"type":"Image"
 						},
 						"tile_scroll":{},
@@ -357,7 +531,7 @@
 							"shift":0,
 							"low":0.0,
 							"high":63.0,
-							"clamp":0
+							"mirror":0
 						},
 						"T":{
 							"mask":6,
@@ -465,7 +639,7 @@
 						"g_attroffset_st_enable":0,
 						"g_cull_front":0,
 						"g_cull_back":1,
-						"g_packed_normals":0,
+						"g_packed_normals":1,
 						"g_lighttoalpha":0,
 						"g_lighting_specular":0,
 						"g_fresnel_color":0,
@@ -527,7 +701,9 @@
 					"tex_scale":[
 						1.0,
 						1.0
-					]
+					],
+					"use_large_textures":0,
+					"scale_autoprop":1
 				},
 				"ootMaterial":{},
 				"objex_bonus":{},
@@ -542,26 +718,28 @@
 	],
 	"meshes":[
 		{
-			"name":"Room",
+			"name":"Mesh",
 			"primitives":[
 				{
 					"attributes":{
 						"COLOR_0":0,
 						"POSITION":1,
 						"NORMAL":2,
-						"TEXCOORD_0":3
+						"TEXCOORD_0":3,
+						"TANGENT":4
 					},
-					"indices":4,
+					"indices":5,
 					"material":0
 				},
 				{
 					"attributes":{
-						"COLOR_0":5,
-						"POSITION":6,
-						"NORMAL":7,
-						"TEXCOORD_0":8
+						"COLOR_0":6,
+						"POSITION":7,
+						"NORMAL":8,
+						"TEXCOORD_0":9,
+						"TANGENT":10
 					},
-					"indices":9,
+					"indices":11,
 					"material":1
 				}
 			]
@@ -571,21 +749,21 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":40,
+			"count":119,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":40,
+			"count":119,
 			"max":[
-				3.996739387512207,
+				4.282532215118408,
 				0,
-				4
+				3.117810010910034
 			],
 			"min":[
-				-4.003260612487793,
-				-8.56938648223877,
+				-4.289052486419678,
+				-10.312947273254395,
 				0
 			],
 			"type":"VEC3"
@@ -593,127 +771,151 @@
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":40,
+			"count":119,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":3,
 			"componentType":5126,
-			"count":40,
+			"count":119,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":4,
-			"componentType":5123,
-			"count":72,
-			"type":"SCALAR"
+			"componentType":5126,
+			"count":119,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":5,
-			"componentType":5126,
-			"count":12,
-			"type":"VEC4"
+			"componentType":5123,
+			"count":288,
+			"type":"SCALAR"
 		},
 		{
 			"bufferView":6,
 			"componentType":5126,
-			"count":12,
-			"max":[
-				3.996738910675049,
-				0,
-				0
-			],
-			"min":[
-				-4.003260612487793,
-				-8.56938648223877,
-				0
-			],
-			"type":"VEC3"
+			"count":28,
+			"type":"VEC4"
 		},
 		{
 			"bufferView":7,
 			"componentType":5126,
-			"count":12,
+			"count":28,
+			"max":[
+				4.282532215118408,
+				0,
+				0
+			],
+			"min":[
+				-4.289052486419678,
+				-10.312947273254395,
+				0
+			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":8,
 			"componentType":5126,
-			"count":12,
-			"type":"VEC2"
+			"count":28,
+			"type":"VEC3"
 		},
 		{
 			"bufferView":9,
+			"componentType":5126,
+			"count":28,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":10,
+			"componentType":5126,
+			"count":28,
+			"type":"VEC4"
+		},
+		{
+			"bufferView":11,
 			"componentType":5123,
-			"count":24,
+			"count":96,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":640,
+			"byteLength":1904,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":480,
-			"byteOffset":640,
+			"byteLength":1428,
+			"byteOffset":1904,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":480,
-			"byteOffset":1120,
+			"byteLength":1428,
+			"byteOffset":3332,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":320,
-			"byteOffset":1600,
+			"byteLength":952,
+			"byteOffset":4760,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":144,
-			"byteOffset":1920,
+			"byteLength":1904,
+			"byteOffset":5712,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":576,
+			"byteOffset":7616,
 			"target":34963
 		},
 		{
 			"buffer":0,
+			"byteLength":448,
+			"byteOffset":8192,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":336,
+			"byteOffset":8640,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":336,
+			"byteOffset":8976,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":224,
+			"byteOffset":9312,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":448,
+			"byteOffset":9536,
+			"target":34962
+		},
+		{
+			"buffer":0,
 			"byteLength":192,
-			"byteOffset":2064,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":144,
-			"byteOffset":2256,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":144,
-			"byteOffset":2400,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":96,
-			"byteOffset":2544,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":48,
-			"byteOffset":2640,
+			"byteOffset":9984,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":2688,
+			"byteLength":10176,
 			"uri":"room01.bin"
 		}
 	]

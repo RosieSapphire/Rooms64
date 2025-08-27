@@ -11,6 +11,9 @@ enum {
         ROOM_TYPE_00,
         ROOM_TYPE_01,
         ROOM_TYPE_02,
+        ROOM_TYPE_03,
+        ROOM_TYPE_04,
+        ROOM_TYPE_05,
         ROOM_TYPE_CNT
 };
 

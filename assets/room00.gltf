@@ -24,7 +24,11 @@
 				"f3d_simple":0,
 				"ootPreviewSettingsProperty":{
 					"ootCSPreviewCSObj":{}
-				}
+				},
+				"opLargeTextureProperty":{
+					"mat":{}
+				},
+				"f3d_type":6
 			},
 			"name":"Scene",
 			"nodes":[
@@ -270,7 +274,7 @@
 			"name":"DoorPos",
 			"translation":[
 				0.003261089324951172,
-				-15,
+				-15.318472862243652,
 				0
 			]
 		}
@@ -664,7 +668,7 @@
 						"g_attroffset_st_enable":0,
 						"g_cull_front":0,
 						"g_cull_back":1,
-						"g_packed_normals":0,
+						"g_packed_normals":1,
 						"g_lighttoalpha":0,
 						"g_lighting_specular":0,
 						"g_fresnel_color":0,
@@ -733,7 +737,7 @@
 				"is_f3d":1,
 				"mat_ver":6,
 				"f3d_update_flag":0,
-				"menu_tab":1
+				"menu_tab":2
 			},
 			"name":"carpet",
 			"pbrMetallicRoughness":{}
@@ -772,21 +776,21 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":64,
+			"count":85,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":64,
+			"count":85,
 			"max":[
-				4.607032775878906,
+				4.6070332527160645,
 				0,
-				5.738498210906982
+				5.738498687744141
 			],
 			"min":[
-				-4.607032775878906,
-				-15.000001907348633,
+				-4.6070332527160645,
+				-15.318475723266602,
 				0
 			],
 			"type":"VEC3"
@@ -794,45 +798,45 @@
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":64,
+			"count":85,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":3,
 			"componentType":5126,
-			"count":64,
+			"count":85,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":4,
 			"componentType":5126,
-			"count":64,
+			"count":85,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":5,
 			"componentType":5123,
-			"count":168,
+			"count":228,
 			"type":"SCALAR"
 		},
 		{
 			"bufferView":6,
 			"componentType":5126,
-			"count":30,
+			"count":29,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":7,
 			"componentType":5126,
-			"count":30,
+			"count":29,
 			"max":[
-				4.607032775878906,
+				4.6070332527160645,
 				0,
 				0
 			],
 			"min":[
 				-4.607032775878906,
-				-15.000001907348633,
+				-15.318475723266602,
 				0
 			],
 			"type":"VEC3"
@@ -840,105 +844,105 @@
 		{
 			"bufferView":8,
 			"componentType":5126,
-			"count":30,
+			"count":29,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":9,
 			"componentType":5126,
-			"count":30,
+			"count":29,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":10,
 			"componentType":5126,
-			"count":30,
+			"count":29,
 			"type":"VEC4"
 		},
 		{
 			"bufferView":11,
 			"componentType":5123,
-			"count":96,
+			"count":84,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":1024,
+			"byteLength":1360,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":768,
-			"byteOffset":1024,
+			"byteLength":1020,
+			"byteOffset":1360,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":768,
-			"byteOffset":1792,
+			"byteLength":1020,
+			"byteOffset":2380,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":512,
-			"byteOffset":2560,
+			"byteLength":680,
+			"byteOffset":3400,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":1024,
-			"byteOffset":3072,
+			"byteLength":1360,
+			"byteOffset":4080,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":336,
-			"byteOffset":4096,
+			"byteLength":456,
+			"byteOffset":5440,
 			"target":34963
 		},
 		{
 			"buffer":0,
-			"byteLength":480,
-			"byteOffset":4432,
+			"byteLength":464,
+			"byteOffset":5896,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":360,
-			"byteOffset":4912,
+			"byteLength":348,
+			"byteOffset":6360,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":360,
-			"byteOffset":5272,
+			"byteLength":348,
+			"byteOffset":6708,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":240,
-			"byteOffset":5632,
+			"byteLength":232,
+			"byteOffset":7056,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":480,
-			"byteOffset":5872,
+			"byteLength":464,
+			"byteOffset":7288,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":192,
-			"byteOffset":6352,
+			"byteLength":168,
+			"byteOffset":7752,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":6544,
+			"byteLength":7920,
 			"uri":"room00.bin"
 		}
 	]
