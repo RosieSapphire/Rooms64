@@ -27,7 +27,6 @@ struct door_object {
  * through a door that's already been closed.
  */
 static struct door_object door_objects[TOTAL_ROOM_COUNT];
-static uint32_t door_object_head;
 
 static const char *room_mdl_paths[TOTAL_ROOM_COUNT] = {
         "rom:/room00.t3dm",
@@ -61,11 +60,6 @@ static T3DVec3 get_room_offset(const struct room *head, const struct room *tail)
                 t3d_vec3_diff(&off, &off, &r->door_pos);
 
         return off;
-}
-
-static T3DVec3 get_absolute_door_pos(struct door_object *d)
-{
-        return t3d_vec3_zero();
 }
 
 static void door_update(struct object *o, const float ft)
@@ -200,8 +194,9 @@ void rooms_generate(void)
         next_door_hitbox = door_hitbox_from_room(room_cur);
 }
 
-static void room_update_current(struct player *p, const struct inputs *inp_new,
-                                const struct inputs *inp_old, const float ft)
+static void room_update_current(struct player *p,
+                                const struct inputs *inp_new,
+                                const struct inputs *inp_old)
 {
         if (!aabb_does_point_intersect(&next_door_hitbox, &p->position_b) &&
             (p->mode != PLAYER_MODE_NOCLIP ||
@@ -210,10 +205,8 @@ static void room_update_current(struct player *p, const struct inputs *inp_new,
 
         sound_play(SFX_DOOR_OPEN, MIXER_CH_DOOR, .14f);
 
-        int prev = (room_cur - rooms);
         if ((++room_cur - rooms) < TOTAL_ROOM_COUNT) {
                 T3DVec3 from_door, b2a;
-                int cur;
 
                 t3d_vec3_diff(&from_door, &p->position_b,
                               &(room_cur - 1)->door_pos);
@@ -221,7 +214,6 @@ static void room_update_current(struct player *p, const struct inputs *inp_new,
                 p->position_b = from_door;
                 t3d_vec3_add(&p->position_a, &b2a, &from_door);
                 next_door_hitbox = door_hitbox_from_room(room_cur);
-                cur = (room_cur - rooms);
                 return;
         }
 
@@ -244,11 +236,9 @@ void rooms_update(struct player *p, const struct inputs *inp_new,
                   const struct inputs *inp_old, const float ft)
 {
         struct room *start, *r;
-        struct room *room_prev;
 
         start = room_cur;
-        room_prev = room_cur;
-        room_update_current(p, inp_new, inp_old, ft);
+        room_update_current(p, inp_new, inp_old);
         for (r = start; r > start - MAX_ROOMS_ACTIVE_AT_ONCE; --r) {
                 if (r - rooms < 0)
                         continue;
@@ -275,15 +265,8 @@ static void room_render(const struct room *r, const T3DVec3 *offset,
          * them first so it fails the
          * depth buffer to reduce overdraw.
          */
-        for (i = 0; i < r->obj_cnt; ++i) {
-                struct object *o;
-                struct door_object *d;
-                T3DVec3 or, op, door_off;
-
-                o = r->objs + i;
-                d = DOOR_FROM_OBJ_PTR(o);
-                object_render(o, st);
-        }
+        for (i = 0; i < r->obj_cnt; ++i)
+                object_render(r->objs + i, st);
 
         rspq_block_run(r->dl);
 }
