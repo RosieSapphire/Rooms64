@@ -25,6 +25,7 @@ int main(int argc, char **argv)
 
 	const char *filename = argv[1];
 	const char *filepath = realpath(filename, NULL);
+	printf("RoomDatFinder: InputFile=\"%s\"\n", filepath);
 	char *just_name = remove_extension(filename);
 	const struct aiScene *scene = aiImportFile(filepath,
 			aiProcess_Triangulate | 

@@ -1,6 +1,14 @@
+# dirs
+.cache/
 build/
 filesystem/
-upload.sh
-*.json
+
+# files
+compile_commands.json
 *.z64
+*.elf
+*.dfs
+*.o
 *.blend1
+*.mdl
+*.dat

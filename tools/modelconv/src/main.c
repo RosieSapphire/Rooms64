@@ -8,6 +8,16 @@
 #include "vertex.h"
 #include "gl_mesh.h"
 
+#if 0
+#define MODELCONV_DEBUG
+#endif
+
+#ifdef MODELCONV_DEBUG
+#define DEBUGF(...) printf(__VA_ARGS__)
+#else /* #ifdef MODELCONV_DEBUG */
+#define DEBUGF(...) ((void)0)
+#endif /* #ifdef MODELCONV_DEBUG #else */
+
 char *remove_extension(const char *buf)
 {
 	int len = strlen(buf);
@@ -19,12 +29,12 @@ char *remove_extension(const char *buf)
 static gl_mesh_t _mesh_process(const struct aiMesh *ai_mesh, int i)
 {
 	gl_mesh_t mesh;
-	printf("Mesh %d:\n", i);
+	DEBUGF("Mesh %d:\n", i);
 
 	const uint16_t vert_cnt = ai_mesh->mNumVertices;
 	mesh.vert_cnt = vert_cnt;
 	mesh.verts = malloc(vert_cnt * sizeof(*mesh.verts));
-	printf("\n\t%d Verts:\n", vert_cnt);
+	DEBUGF("\n\t%d Verts:\n", vert_cnt);
 	for(int j = 0; j < vert_cnt; j++) {
 		const struct aiVector3D vert_pos = ai_mesh->mVertices[j];
 		const struct aiVector3D vert_uv = ai_mesh->mTextureCoords[0][j];
@@ -39,24 +49,24 @@ static gl_mesh_t _mesh_process(const struct aiMesh *ai_mesh, int i)
 			mesh.verts[j].uv[k] = uv[k];
 		}
 
-		printf("\t\t(%.3f, %.3f, %.3f), (%.3f, %.3f)\n",
+		DEBUGF("\t\t(%.3f, %.3f, %.3f), (%.3f, %.3f)\n",
 				p[0], p[1], p[2], uv[0], uv[1]);
 	}
 
 	const uint16_t num_indis = ai_mesh->mNumFaces * 3;
-	printf("\t%d Indis:\n", num_indis);
+	DEBUGF("\t%d Indis:\n", num_indis);
 	mesh.indi_cnt = num_indis;
 	mesh.indis = malloc(num_indis * sizeof(*mesh.indis));
 	for(int j = 0; j < num_indis / 3; j++) {
 		const struct aiFace face = ai_mesh->mFaces[j];
 
-		printf("\t\t");
+		DEBUGF("\t\t");
 		for(int k = 0; k < 3; k++) {
-			printf("%d ", face.mIndices[k]);
+			DEBUGF("%d ", face.mIndices[k]);
 			memcpy(mesh.indis + (j * 3 + k), face.mIndices + k,
 					sizeof(uint16_t));
 		}
-		printf("\n");
+		DEBUGF("\n");
 	}
 
 
@@ -97,7 +107,7 @@ int main(int argc, char **argv)
 	}
 
 	int num_meshes = scene->mNumMeshes;
-	printf("Mesh Count: %d\n", num_meshes);
+	DEBUGF("Mesh Count: %d\n", num_meshes);
 	assert(num_meshes > 0);
 	gl_mesh_t *meshes = malloc(sizeof(gl_mesh_t) * num_meshes);
 	for(int i = 0; i < num_meshes; i++)

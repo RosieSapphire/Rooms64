@@ -1,8 +1,9 @@
-default:
+all:
 	gcc src/main.c -o modelconv -lassimp -lm -Iinclude
 
 test:
 	gcc src/test.c -o modelconv_test -lassimp -lm -Iinclude
 
 clean:
-	rm -f modelconv modelconv_test
+	rm -rf modelconv modelconv_test *.mdl *.dat \
+		*.blend1 compile_commands.json .cache/

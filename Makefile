@@ -21,11 +21,13 @@ MDL_CONV_DIR := tools/modelconv
 MDL_CONV     := $(MDL_CONV_DIR)/modelconv
 DAT_FIND     := tools/roomdatfinder/roomdatfinder
 
+ROOM_MDLS := room0 room1 room2 room3 room4 room5
+
 ASSETS_WAV := $(wildcard assets/*.wav)
 ASSETS_PNG := $(wildcard assets/*.png)
 ASSETS_TTF := $(wildcard assets/*.ttf)
 ASSETS_MDL := $(wildcard $(MDL_CONV_DIR)/*.glb)
-ASSETS_DAT := $(ASSETS_MDL)
+ASSETS_DAT := $(ROOM_MDLS:%=$(MDL_CONV_DIR)/%.glb)
 
 ASSETS_CONV := $(ASSETS_WAV:assets/%.wav=$(FS_DIR)/%.wav64) \
 	       $(ASSETS_PNG:assets/%.png=$(FS_DIR)/%.sprite) \
@@ -35,7 +37,6 @@ ASSETS_CONV := $(ASSETS_WAV:assets/%.wav=$(FS_DIR)/%.wav64) \
 
 AUDIOCONV_FLAGS := --ym-compress true
 MKSPRITE_FLAGS  := -c 1
-
 
 .PHONY: all clean
 
