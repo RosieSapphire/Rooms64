@@ -3,3 +3,4 @@ filesystem/
 upload.sh
 *.json
 *.z64
+*.blend1

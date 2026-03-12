@@ -32,16 +32,17 @@ static void _n64_init(void)
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	controller_init();
-	audio_init(32000, 4);
+	audio_init(48000, 4);
 	mixer_init(SFXC_COUNT);
 	sfx_load();
 
-	/*
 	debug_load();
+        /*
 	debug_init_isviewer();
 	debug_init_usblog();
 	rdpq_debug_start();
-	*/
+	rdpq_debug_log(true);
+        */
 
 	srand(TICKS_READ());
 }
@@ -135,8 +136,13 @@ int main(void)
 					(float[3]){cam.eye[0], 0, cam.eye[2]},
 					a60_dir);
 
-			player_update(&cam, held, down, current_room,
-					vector_magnitude(a60_dir),
+			/* Temporary Death State */
+			float a60_dist = vector_magnitude(a60_dir);
+			if(a60_dist < 3 && pstate != PS_IN_LOCKER &&
+					a60.is_active)
+				assertf(0, "You died\n");
+
+			player_update(&cam, held, down, current_room, a60_dist,
 					a60.is_active);
 			doors_update_open_anim(current_room);
 

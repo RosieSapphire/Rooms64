@@ -104,12 +104,7 @@ rspq_block_t *gl_mesh_gen_instance_block(const gl_mesh_t *m)
 {
 	if(m->tex.id > 0) {
 		rspq_block_begin();
-		glColor3f(1, 1, 1);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, m->tex.id);
-		gl_mesh_draw(m);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		glDisable(GL_TEXTURE_2D);
+		gl_mesh_draw_custom_tex(m, m->tex, 1, 1, 1);
 		return rspq_block_end();
 	}
 

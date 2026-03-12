@@ -40,11 +40,6 @@ void entity_update(entity_t *e, int current_room)
 		e->num_rooms_crossed++;
 		e->progress = 0;
 	}
-
-	bool can_kill = current_room == e->cur_point && e->progress > 0.5f;
-	bool player_in_locker = pstate == PS_IN_LOCKER;
-	if(can_kill && !player_in_locker)
-		assertf(0, "You died\n");
 }
 
 void entity_get_pos(const entity_t *e, float vec[3], float subtick)

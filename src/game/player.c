@@ -105,37 +105,38 @@ static void _player_update_headbob(player_t *c)
 	vector_copy(c->up, upbob);
 
 	/* Moving headbob */
-	c->bob_timer += speed;
+	float forw[3], side[3], up[3];
 
-	float forw[3];
-	float side[3];
-	float up[3];
+	c->bob_timer += speed;
 	vector_copy(c->up, up);
 	player_get_forward(*c, forw);
 	_player_get_side(*c, forw, side);
 
 	static bool played_footstep = false;
-
 	float sin_bob = sinf(c->bob_timer);
+
 	mixer_ch_set_vol(SFXC_FOOTSTEP, speed * 2, speed * 2);
-	if(fabsf(sin_bob) >= 0.8f) {
-		if(!played_footstep) {
+	if(fabsf(sin_bob) >= 0.8f)
+	{
+		if(!played_footstep)
+		{
 			wav64_play(&footstep_sfx, 1);
 			played_footstep = true;
 		}
-	} else {
+	}
+	else
+	{
 		played_footstep = false;
 	}
 
 	float sin2_bob = sinf(c->bob_timer * 2);
+	float bob[3];
+
 	vector_scale(side, sin_bob * speed * HEADBOB_SCALE);
 	vector_scale(up, sin2_bob * speed * HEADBOB_SCALE * 0.5f);
-	float bob[3];
 	vector_add(side, up, bob);
 	vector_add(c->eyebob, bob, c->eyebob);
 	vector_add(focusbob, bob, focusbob);
-	
-
 }
 
 static void _player_update_look(player_t *c,
