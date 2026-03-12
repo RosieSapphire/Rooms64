@@ -19,20 +19,20 @@ typedef struct {
 	GLfloat shake, shake_last;
 } player_t;
 
-enum player_state {
-	PS_NORMAL,
-	PS_IN_LOCKER,
-	PS_COUNT
-};
+enum player_state { PS_NORMAL, PS_IN_LOCKER, PS_COUNT };
 
 extern enum player_state pstate;
-extern int locker_index;
+extern int		 locker_index;
 
 void player_get_forward(player_t c, GLfloat v[3]);
 void player_get_forward_interp(player_t c, GLfloat v[3], float t);
-void player_update(player_t *c, struct controller_data held,
-		struct controller_data down, int current_room,
-		float ent_dist, bool ent_active);
+void player_update(player_t		 *c,
+		   const joypad_inputs_t held,
+		   const joypad_inputs_t down,
+		   const int16_t	  stick[2],
+		   const int		  current_room,
+		   const float		  ent_dist,
+		   const bool		  ent_active);
 void player_setup_view_mat(player_t c, float subtick);
 void player_get_focus(player_t c, GLfloat v[3]);
 bool player_is_grounded(player_t c);
