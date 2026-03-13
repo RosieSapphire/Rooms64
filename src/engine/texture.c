@@ -3,15 +3,9 @@
 
 #include "engine/texture.h"
 
-static unsigned int num_texs_loaded = 0;
+static unsigned int num_texs_loaded  = 0;
 static const char **tex_paths_loaded = NULL;
-static texture_t *tex_objs_loaded = NULL;
-
-void textures_init(void)
-{
-	tex_paths_loaded = malloc(0);
-	tex_objs_loaded = malloc(0);
-}
+static texture_t   *tex_objs_loaded  = NULL;
 
 texture_t texture_create_empty(int fmt, int width, int height)
 {
@@ -28,23 +22,37 @@ texture_t texture_create_empty(int fmt, int width, int height)
 	return t;
 }
 
+static __inline void *alloc_or_realloc(void *ptr, const size_t sz)
+{
+	assert(sz);
+
+	if (!ptr)
+		ptr = malloc(sz);
+	else
+		ptr = realloc(ptr, sz);
+
+	return ptr;
+}
+
 texture_t texture_create_file(const char *path)
 {
 	texture_t t;
 
-	for(unsigned int i = 0; i < num_texs_loaded; i++) {
-		if(strcmp(tex_paths_loaded[i], path))
+	for (unsigned int i = 0; i < num_texs_loaded; i++) {
+		if (strcmp(tex_paths_loaded[i], path))
 			continue;
 
 		return tex_objs_loaded[i];
 	}
 
 	num_texs_loaded++;
-	tex_paths_loaded = realloc(tex_paths_loaded,
-			sizeof(const char *) * num_texs_loaded);
-	tex_objs_loaded = realloc(tex_objs_loaded,
-			sizeof(texture_t) * num_texs_loaded);
-	t.spr = sprite_load(path);
+	tex_paths_loaded = alloc_or_realloc(tex_paths_loaded,
+					    sizeof(*tex_paths_loaded) *
+							    num_texs_loaded);
+	tex_objs_loaded	 = alloc_or_realloc(tex_objs_loaded,
+					    sizeof(*tex_objs_loaded) *
+							    num_texs_loaded);
+	t.spr		 = sprite_load(path);
 
 	glGenTextures(1, &t.id);
 	glBindTexture(GL_TEXTURE_2D, t.id);
@@ -52,14 +60,12 @@ texture_t texture_create_file(const char *path)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	rdpq_texparms_t parms = {
-		.s.repeats = REPEAT_INFINITE,
-		.t.repeats = REPEAT_INFINITE
-	};
+	rdpq_texparms_t parms = { .s.repeats = REPEAT_INFINITE,
+				  .t.repeats = REPEAT_INFINITE };
 	glSpriteTextureN64(GL_TEXTURE_2D, t.spr, &parms);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	tex_objs_loaded[num_texs_loaded - 1] = t;
+	tex_objs_loaded[num_texs_loaded - 1]  = t;
 	tex_paths_loaded[num_texs_loaded - 1] = path;
 
 	return t;

@@ -30,7 +30,6 @@ static void _n64_init(void)
 	dfs_init(DFS_DEFAULT_LOCATION);
 	rdpq_init();
 	gl_init();
-	textures_init();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
