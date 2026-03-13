@@ -3,7 +3,9 @@
 #include <assimp/postprocess.h>
 
 #include "rp_types.h"
-#include "rp_assert.h"
+
+#define RP_LOG_IMPLEMENTATION
+#include "rp_log.h"
 
 #ifdef _DEBUG
 #define MODELCONV_DEBUG
@@ -35,12 +37,12 @@ char *path_remove_extension(const char *buf)
 static struct gl_mesh _mesh_process(const struct aiMesh *ai_mesh, int i)
 {
 	struct gl_mesh mesh;
-	debugf("Mesh %d:\n", i);
+	rp_logf("Mesh %d:\n", i);
 
 	const u16 vert_cnt = ai_mesh->mNumVertices;
 	mesh.vert_cnt	   = vert_cnt;
 	mesh.verts	   = malloc(vert_cnt * sizeof(*mesh.verts));
-	debugf("\n\t%d Verts:\n", vert_cnt);
+	rp_logf("\n\t%d Verts:\n", vert_cnt);
 	for (int j = 0; j < vert_cnt; j++) {
 		const struct aiVector3D vert_pos = ai_mesh->mVertices[j];
 		const struct aiVector3D vert_uv = ai_mesh->mTextureCoords[0][j];
@@ -55,29 +57,29 @@ static struct gl_mesh _mesh_process(const struct aiMesh *ai_mesh, int i)
 			mesh.verts[j].uv[k] = uv[k];
 		}
 
-		debugf("\t\t(%.3f, %.3f, %.3f), (%.3f, %.3f)\n",
-		       p[0],
-		       p[1],
-		       p[2],
-		       uv[0],
-		       uv[1]);
+		rp_logf("\t\t(%.3f, %.3f, %.3f), (%.3f, %.3f)\n",
+			p[0],
+			p[1],
+			p[2],
+			uv[0],
+			uv[1]);
 	}
 
 	const u16 num_indis = ai_mesh->mNumFaces * 3;
-	debugf("\t%d Indis:\n", num_indis);
+	rp_logf("\t%d Indis:\n", num_indis);
 	mesh.indi_cnt = num_indis;
 	mesh.indis    = malloc(num_indis * sizeof(*mesh.indis));
 	for (int j = 0; j < num_indis / 3; j++) {
 		const struct aiFace face = ai_mesh->mFaces[j];
 
-		debugf("\t\t");
+		rp_logf("\t\t");
 		for (int k = 0; k < 3; k++) {
-			debugf("%d ", face.mIndices[k]);
+			rp_logf("%d ", face.mIndices[k]);
 			memcpy(mesh.indis + (j * 3 + k),
 			       face.mIndices + k,
 			       sizeof(u16));
 		}
-		debugf("\n");
+		rp_logf("\n");
 	}
 
 	return mesh;
@@ -107,7 +109,8 @@ int main(int argc, char **argv)
 	const char	     *path_input, *path_real;
 	char		     *just_name;
 
-	assert(argc == 2);
+	rp_assertf(argv[0], "Somehow program name is not accounted for.");
+	rp_assertf(argc == 2, "usage: %s [input_glb]", argv[0]);
 
 	path_input = argv[1];
 	path_real  = realpath(path_input, NULL);
@@ -121,8 +124,10 @@ int main(int argc, char **argv)
 	}
 
 	int num_meshes = scene->mNumMeshes;
-	debugf("Mesh Count: %d\n", num_meshes);
-	assert(num_meshes > 0);
+	rp_logf("Mesh Count: %d\n", num_meshes);
+	rp_assertf(num_meshes > 0,
+		   "Scene loaded from \"%s\" has 0 meshes.",
+		   path_input);
 	struct gl_mesh *meshes = malloc(sizeof(struct gl_mesh) * num_meshes);
 	for (int i = 0; i < num_meshes; i++)
 		meshes[i] = _mesh_process(scene->mMeshes[i], i);
