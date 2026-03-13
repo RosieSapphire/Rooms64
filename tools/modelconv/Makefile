@@ -5,7 +5,7 @@ PROG := $(BUILD_DIR)/modelconv.elf
 
 CC := gcc
 #CFLAGS := -Wall -Wextra -Werror -pedantic -ansi
-CFLAGS := --no-warnings
+CFLAGS := --no-warnings -I../../vendor/rose_petal
 ifdef DEBUG
 	CFLAGS += -O0 -ggdb3 -fsanitize=address,undefined,leak,null -D_DEBUG
 else

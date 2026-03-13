@@ -1,35 +1,30 @@
-#include <stdio.h>
-#include <assert.h>
-#include <stdlib.h>
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <string.h>
+
+#include "rp_types.h"
+#include "rp_assert.h"
 
 #ifdef _DEBUG
 #define MODELCONV_DEBUG
 #endif /* #ifdef _DEBUG */
 
-#ifdef MODELCONV_DEBUG
-#define DEBUGF(...) printf(__VA_ARGS__)
-#else /* #ifdef MODELCONV_DEBUG */
-#define DEBUGF(...) ((void)0)
-#endif /* #ifdef MODELCONV_DEBUG #else */
+struct vertex {
+	f32 pos[3];
+	f32 uv[2];
+};
 
-typedef struct {
-	float pos[3];
-	float uv[2];
-} vertex_t;
+struct gl_mesh {
+	struct vertex *verts;
+	u16	      *indis;
+	void	      *spr;
+	u32	       tex;
+	u16	       vert_cnt;
+	u16	       indi_cnt;
+};
 
-typedef struct {
-	uint16_t     vert_cnt, indi_cnt;
-	vertex_t    *verts;
-	uint16_t    *indis;
-	unsigned int tex;
-	void	    *spr;
-} gl_mesh_t;
-
-char *remove_extension(const char *buf)
+/* FIXME: This only accounts for the extension being 3 characters */
+char *path_remove_extension(const char *buf)
 {
 	int len	  = strlen(buf);
 	char *new = malloc(len - 3);
@@ -37,21 +32,21 @@ char *remove_extension(const char *buf)
 	return new;
 }
 
-static gl_mesh_t _mesh_process(const struct aiMesh *ai_mesh, int i)
+static struct gl_mesh _mesh_process(const struct aiMesh *ai_mesh, int i)
 {
-	gl_mesh_t mesh;
-	DEBUGF("Mesh %d:\n", i);
+	struct gl_mesh mesh;
+	debugf("Mesh %d:\n", i);
 
-	const uint16_t vert_cnt = ai_mesh->mNumVertices;
-	mesh.vert_cnt		= vert_cnt;
-	mesh.verts		= malloc(vert_cnt * sizeof(*mesh.verts));
-	DEBUGF("\n\t%d Verts:\n", vert_cnt);
+	const u16 vert_cnt = ai_mesh->mNumVertices;
+	mesh.vert_cnt	   = vert_cnt;
+	mesh.verts	   = malloc(vert_cnt * sizeof(*mesh.verts));
+	debugf("\n\t%d Verts:\n", vert_cnt);
 	for (int j = 0; j < vert_cnt; j++) {
 		const struct aiVector3D vert_pos = ai_mesh->mVertices[j];
 		const struct aiVector3D vert_uv = ai_mesh->mTextureCoords[0][j];
 
-		float *p  = ((float *)&vert_pos);
-		float *uv = ((float *)&vert_uv);
+		f32 *p	= ((f32 *)&vert_pos);
+		f32 *uv = ((f32 *)&vert_uv);
 		for (int k = 0; k < 3; k++) {
 			mesh.verts[j].pos[k] = p[k];
 
@@ -60,7 +55,7 @@ static gl_mesh_t _mesh_process(const struct aiMesh *ai_mesh, int i)
 			mesh.verts[j].uv[k] = uv[k];
 		}
 
-		DEBUGF("\t\t(%.3f, %.3f, %.3f), (%.3f, %.3f)\n",
+		debugf("\t\t(%.3f, %.3f, %.3f), (%.3f, %.3f)\n",
 		       p[0],
 		       p[1],
 		       p[2],
@@ -68,37 +63,37 @@ static gl_mesh_t _mesh_process(const struct aiMesh *ai_mesh, int i)
 		       uv[1]);
 	}
 
-	const uint16_t num_indis = ai_mesh->mNumFaces * 3;
-	DEBUGF("\t%d Indis:\n", num_indis);
+	const u16 num_indis = ai_mesh->mNumFaces * 3;
+	debugf("\t%d Indis:\n", num_indis);
 	mesh.indi_cnt = num_indis;
 	mesh.indis    = malloc(num_indis * sizeof(*mesh.indis));
 	for (int j = 0; j < num_indis / 3; j++) {
 		const struct aiFace face = ai_mesh->mFaces[j];
 
-		DEBUGF("\t\t");
+		debugf("\t\t");
 		for (int k = 0; k < 3; k++) {
-			DEBUGF("%d ", face.mIndices[k]);
+			debugf("%d ", face.mIndices[k]);
 			memcpy(mesh.indis + (j * 3 + k),
 			       face.mIndices + k,
-			       sizeof(uint16_t));
+			       sizeof(u16));
 		}
-		DEBUGF("\n");
+		debugf("\n");
 	}
 
 	return mesh;
 }
 
-static void _mesh_write(gl_mesh_t *m, int i, FILE *out)
+static void _mesh_write(struct gl_mesh *m, int i, FILE *out)
 {
 	fwrite(&m->vert_cnt, 2, 1, out);
 	fwrite(&m->indi_cnt, 2, 1, out);
 
 	for (int j = 0; j < m->vert_cnt; j++) {
 		for (int k = 0; k < 3; k++)
-			fwrite(m->verts[j].pos + k, sizeof(float), 1, out);
+			fwrite(m->verts[j].pos + k, sizeof(f32), 1, out);
 
 		for (int k = 0; k < 2; k++)
-			fwrite(m->verts[j].uv + k, sizeof(float), 1, out);
+			fwrite(m->verts[j].uv + k, sizeof(f32), 1, out);
 	}
 
 	fwrite(m->indis, 2, m->indi_cnt, out);
@@ -106,26 +101,29 @@ static void _mesh_write(gl_mesh_t *m, int i, FILE *out)
 
 int main(int argc, char **argv)
 {
+	static const u32 import_flags =
+			aiProcess_Triangulate | aiProcess_JoinIdenticalVertices;
+	const struct aiScene *scene;
+	const char	     *path_input, *path_real;
+	char		     *just_name;
+
 	assert(argc == 2);
 
-	const char	     *filename	= argv[1];
-	const char	     *filepath	= realpath(filename, NULL);
-	char		     *just_name = remove_extension(filename);
-	const struct aiScene *scene	= aiImportFile(
-			    filepath,
-			    aiProcess_Triangulate |
-					    aiProcess_JoinIdenticalVertices);
+	path_input = argv[1];
+	path_real  = realpath(path_input, NULL);
+	just_name  = path_remove_extension(path_input);
+	scene	   = aiImportFile(path_real, import_flags);
 	if (!scene) {
 		fprintf(stderr,
 			"ERROR: Failed to load file from %s\n",
-			filepath);
+			path_real);
 		exit(1);
 	}
 
 	int num_meshes = scene->mNumMeshes;
-	DEBUGF("Mesh Count: %d\n", num_meshes);
+	debugf("Mesh Count: %d\n", num_meshes);
 	assert(num_meshes > 0);
-	gl_mesh_t *meshes = malloc(sizeof(gl_mesh_t) * num_meshes);
+	struct gl_mesh *meshes = malloc(sizeof(struct gl_mesh) * num_meshes);
 	for (int i = 0; i < num_meshes; i++)
 		meshes[i] = _mesh_process(scene->mMeshes[i], i);
 
