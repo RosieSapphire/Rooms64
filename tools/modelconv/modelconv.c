@@ -11,10 +11,12 @@
 #define RP_LOG_IMPLEMENTATION
 #include "rp_log.h"
 
+#if 0
 #define RP_MEMORY_LOG
 #define RP_MEMORY_WRAP_STDLIB
 #define RP_MEMORY_IMPLEMENTATION
 #include "rp_memory.h"
+#endif
 
 #define PATH_BUF_LEN	 1024
 #define PATH_DIR_BUF_LEN 512
@@ -27,10 +29,9 @@ struct vertex {
 struct gl_mesh {
 	struct vertex *verts;
 	u16	      *indis;
-	void	      *spr;
-	u32	       tex;
 	u16	       vert_cnt;
 	u16	       indi_cnt;
+	u32	       _pad;
 };
 
 static __inline u16 u16_from_u32_safe(const u32 i)
@@ -40,6 +41,17 @@ static __inline u16 u16_from_u32_safe(const u32 i)
 	rp_assertf(i == o, "Downcasing u32 value %u to u16 gives %u\n", i, o);
 
 	return (u16)o;
+}
+
+static void _mesh_free(struct gl_mesh *m)
+{
+	free(m->verts);
+	m->verts    = NULL;
+	m->vert_cnt = 0;
+
+	free(m->indis);
+	m->indis    = NULL;
+	m->indi_cnt = 0;
 }
 
 static struct gl_mesh _mesh_process(const struct aiMesh *ai_mesh, const u32 i)
@@ -248,14 +260,11 @@ int main(int argc, char **argv)
 	rp_logf("Input Path  : \"%s\"\n", path_input);
 	rp_logf("Output Path : \"%s\"\n", path_output);
 
+	/* Load the scene from the input file */
 	scene = aiImportFile(path_input, import_flags);
-	if (!scene) {
-		fprintf(stderr,
-			"ERROR: Failed to load file from %s\n",
-			path_input);
-		exit(1);
-	}
+	rp_assertf(scene, "Failed to load file from %s", path_input);
 
+	/* Convert the meshes over from the input GLB file */
 	mesh_cnt = scene->mNumMeshes;
 	rp_logf("Mesh Count: %d\n", mesh_cnt);
 	rp_assertf(mesh_cnt > 0,
@@ -265,12 +274,18 @@ int main(int argc, char **argv)
 	for (i = 0; i < mesh_cnt; i++)
 		meshes[i] = _mesh_process(scene->mMeshes[i], i);
 
+	/* Write the meshes out to the output file */
 	out_file = fopen(path_output, "wb");
 	fwrite(&mesh_cnt, 2, 1, out_file);
 	for (i = 0; i < mesh_cnt; i++)
 		_mesh_write(meshes + i, out_file);
 
 	fclose(out_file);
+
+	/* Free everything */
+	for (i = 0; i < mesh_cnt; ++i)
+		_mesh_free(meshes + i);
+	free(meshes);
 
 	return 0;
 }
