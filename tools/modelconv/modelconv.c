@@ -1,17 +1,23 @@
+#include <stdlib.h>
+
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 #include "rp_types.h"
 
-#ifndef _DEBUG
+#if 0
+#define MODELCONV_CHECK_MEMORY
+#endif
+
+#if !defined(_DEBUG) && defined(NDEBUG)
 #define RP_LOG_DISABLE
 #endif /* #ifndef _DEBUG */
 
 #define RP_LOG_IMPLEMENTATION
 #include "rp_log.h"
 
-#if 0
+#ifdef MODELCONV_CHECK_MEMORY
 #define RP_MEMORY_LOG
 #define RP_MEMORY_WRAP_STDLIB
 #define RP_MEMORY_IMPLEMENTATION
@@ -222,8 +228,14 @@ int main(int argc, char **argv)
 	u32 mesh_cnt, i;
 
 	/* Verify input is valid */
+	if (argc != 3) {
+		fprintf(stderr,
+			"usage: %s [input_glb] [output_dir]\n",
+			argv[0]);
+		return 1;
+	}
+
 	rp_assertf(argv[0], "Somehow program name is not accounted for.");
-	rp_assertf(argc == 3, "usage: %s [input_glb] [output_dir]", argv[0]);
 	rp_assertf(argv[1], "Input file argument is invalid");
 	rp_assertf(argv[2], "Output directory argument is invalid");
 
@@ -262,7 +274,10 @@ int main(int argc, char **argv)
 
 	/* Load the scene from the input file */
 	scene = aiImportFile(path_input, import_flags);
-	rp_assertf(scene, "Failed to load file from %s", path_input);
+	if (!scene) {
+		fprintf(stderr, "Failed to load file from %s\n", path_input);
+		return 1;
+	}
 
 	/* Convert the meshes over from the input GLB file */
 	mesh_cnt = scene->mNumMeshes;

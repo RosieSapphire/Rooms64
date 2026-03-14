@@ -1,5 +1,5 @@
 BUILD_DIR := build
-DEBUG     ?= 1
+DEBUG     ?=
 
 PROG := $(BUILD_DIR)/modelconv.elf
 
