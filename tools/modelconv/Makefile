@@ -3,9 +3,12 @@ DEBUG     ?= 1
 
 PROG := $(BUILD_DIR)/modelconv.elf
 
-CC := gcc
+CC := clang-20
 #CFLAGS := -Wall -Wextra -Werror -pedantic -ansi
-CFLAGS := --no-warnings -I../../vendor/rose_petal
+WARN_IGNORE := -Wno-reserved-macro-identifier -Wno-reserved-identifier \
+	       -Wno-format-nonliteral -Wno-unsafe-buffer-usage
+CFLAGS := -Weverything -Werror -pedantic -std=c99 \
+	  -I../../vendor/rose_petal $(WARN_IGNORE)
 ifdef DEBUG
 	CFLAGS += -O0 -ggdb3 -fsanitize=address,undefined,leak,null -D_DEBUG
 else
