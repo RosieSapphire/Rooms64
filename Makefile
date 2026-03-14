@@ -32,8 +32,8 @@ ASSETS_DAT := $(ROOM_MDLS:%=$(MDL_CONV_DIR)/res/glb/%.glb)
 ASSETS_CONV := $(ASSETS_WAV:assets/%.wav=$(FS_DIR)/%.wav64) \
 	       $(ASSETS_PNG:assets/%.png=$(FS_DIR)/%.sprite) \
 	       $(ASSETS_TTF:assets/%.ttf=$(FS_DIR)/%.font64) \
-	       $(ASSETS_MDL:$(MDL_CONV_DIR)/%.glb=$(FS_DIR)/%.mdl) \
-	       $(ASSETS_DAT:$(MDL_CONV_DIR)/%.glb=$(FS_DIR)/%.dat)
+	       $(ASSETS_MDL:$(MDL_CONV_DIR)/res/glb/%.glb=$(FS_DIR)/%.mdl) \
+	       $(ASSETS_DAT:$(MDL_CONV_DIR)/res/glb/%.glb=$(FS_DIR)/%.dat)
 
 AUDIOCONV_FLAGS := --ym-compress true
 MKSPRITE_FLAGS  := -c 1
@@ -62,13 +62,13 @@ $(FS_DIR)/door_num_font.font64: assets/door_num_font.ttf
 	@echo "    [FONT] $@"
 	@$(N64_MKFONT) --size 36 -o $(dir $@) "$<"
 
-$(FS_DIR)/%.mdl: tools/modelconv/%.glb
+$(FS_DIR)/%.mdl: tools/modelconv/res/glb/%.glb
 	@mkdir -p $(dir $@)
 	@echo "    [MDL] $@"
 	$(MDL_CONV) $< $(dir $@)
 	# TODO: Maybe use mkasset for this
 
-$(FS_DIR)/%.dat: tools/modelconv/%.glb
+$(FS_DIR)/%.dat: tools/modelconv/res/glb/%.glb
 	@mkdir -p $(dir $@)
 	@echo "    [DAT] $@"
 	$(DAT_FIND) $<
