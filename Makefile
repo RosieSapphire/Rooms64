@@ -18,7 +18,7 @@ INC_FLAGS  := $(INC_DIRS:%=-I%)
 N64_CFLAGS += -Wall -Wextra -Werror -pedantic $(INC_FLAGS)
 
 MDL_CONV_DIR := tools/modelconv
-MDL_CONV     := $(MDL_CONV_DIR)/modelconv
+MDL_CONV     := $(MDL_CONV_DIR)/build/modelconv.elf
 DAT_FIND     := tools/roomdatfinder/roomdatfinder
 
 ROOM_MDLS := room0 room1 room2 room3 room4 room5
@@ -26,8 +26,8 @@ ROOM_MDLS := room0 room1 room2 room3 room4 room5
 ASSETS_WAV := $(wildcard assets/*.wav)
 ASSETS_PNG := $(wildcard assets/*.png)
 ASSETS_TTF := $(wildcard assets/*.ttf)
-ASSETS_MDL := $(wildcard $(MDL_CONV_DIR)/*.glb)
-ASSETS_DAT := $(ROOM_MDLS:%=$(MDL_CONV_DIR)/%.glb)
+ASSETS_MDL := $(wildcard $(MDL_CONV_DIR)/res/glb/*.glb)
+ASSETS_DAT := $(ROOM_MDLS:%=$(MDL_CONV_DIR)/res/glb/%.glb)
 
 ASSETS_CONV := $(ASSETS_WAV:assets/%.wav=$(FS_DIR)/%.wav64) \
 	       $(ASSETS_PNG:assets/%.png=$(FS_DIR)/%.sprite) \
@@ -65,9 +65,8 @@ $(FS_DIR)/door_num_font.font64: assets/door_num_font.ttf
 $(FS_DIR)/%.mdl: tools/modelconv/%.glb
 	@mkdir -p $(dir $@)
 	@echo "    [MDL] $@"
-	$(MDL_CONV) $<
+	$(MDL_CONV) $< $(dir $@)
 	# TODO: Maybe use mkasset for this
-	cp $(patsubst %.glb,%.mdl,$<) $@
 
 $(FS_DIR)/%.dat: tools/modelconv/%.glb
 	@mkdir -p $(dir $@)
